@@ -21,94 +21,96 @@
 
     <body>
         <?php
+            if(!require 'isAuthorized.php') header('location:login.php');
+
+            require 'Models/Auxilio.php';
+            require 'Models/User.php';
+            use Model\User;
+            use Model\Auxilio;
+            
             $acceptedInputs = array(
-                'student_name' => 'Nome',
-                'student_city' => 'Cidade',
-                'student_state' => 'Estado',
-                'student_school' => 'Escola',
-                'student_rm' => 'RM'
+                'name' => 'Nome',
+                'city' => 'Cidade',
+                'state' => 'Estado',
+                'school' => 'Escola',
+                'rm' => 'RM'
             );
             $input_values = array();
+
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'yes' ){
+
                 foreach($acceptedInputs as $key => $input){
                     if( !isset($_POST[$key]) or $_POST[$key] === '') {
-                        echo 'err';
                         $err =  "O campo $input é obrigatório!";
                         header("location: index.php?err=$err");
-                        break;
+                        exit;
                     }else{
                         $input_values[$key] = $_POST[$key];
                     }
                 }         
 
-                require('./database/connection.php');
-                try{
+                $user = new User($input_values['name'], $input_values['city'], $input_values['state'], $input_values['school'], $input_values['rm']);
+                $aux = new Auxilio();
+                
+                $userID = $user->insertAll();
+                if($userID){
+                    $inseriuAux = $aux->insert($userID);
+                    if(!$inseriuAux) return new Error('Não possível cadastrar o usuário. Tente novamente mais tarde');
 
-                    $query = "INSERT INTO aux_em (student_name, student_city, student_state, student_school, student_rm)
-                    values(?, ?, ?, ?, ?)";
+                    $successMessage = "Parabéns " . $input_values['name'] . ", você foi cadastrado com sucesso.";
+                    header("location: index.php?success=$successMessage");
 
-                    $command = $connection->prepare($query);
-
-                    $command->bindParam(1,$input_values['student_name']);
-                    $command->bindParam(2,$input_values['student_city']);
-                    $command->bindParam(3,$input_values['student_state']);
-                    $command->bindParam(4,$input_values['student_school']);
-                    $command->bindParam(5,$input_values['student_rm']);
-
-                    if($command->execute() and $command->rowCount() > 0){
-                        $successMessage = "Parabéns " . $input_values['student_name'] . ", você foi cadastrado com sucesso.";
-                        header("location: index.php?success=$successMessage");
-                    }else{
-                        throw new PDOException('Não foi possível cadastrar o usuário. Tente novamente mais tarde.');
-                    }
-
-                }catch(PDOException $e){
-                    echo ("Error: {$e->getMessage()}");
-                }       
+                }else{
+                    throw new Error('Não possível cadastrar o usuário. Tente novamente mais tarde');
+                }
             }else{
+
         ?>
-
-
-        
-
             <div class="container mt-5">
                 <h3>Cadastro Auxílio Emergencial <small>Alunos do Ensino médio</small></h3>
                 <div class="jumbotron">
                     <form action="index.php?send=yes" method="POST" >
-                        <label for="student_name">Nome:</label>
-                        <input type="text" name="student_name" id="student_name" class="form-control">
+                        <label for="name">Nome:</label>
+                        <input  type="text" name="name" id="name" class="form-control">
 
-                        <label for="student_city">Cidade:</label>
-                        <input type="text" name="student_city" id="student_city" class="form-control">
+                        <label for="city">Cidade:</label>
+                        <input  type="text" name="city" id="city" class="form-control">
 
-                        <label for="student_state">Estado</label>
-                        <input type="text" name="student_state" id="student_state" class="form-control">
+                        <label for="state">Estado</label>
+                        <input  type="text" name="state" id="state" class="form-control">
 
-                        <label for="student_school">Escola:</label>
-                        <input type="text" name="student_school" id="student_school" class="form-control">
+                        <label for="school">Escola:</label>
+                        <input  type="text" name="school" id="school" class="form-control">
 
-                        <label for="student_rm">RM:</label>
-                        <input type="text" name="student_rm" maxlength="6" id="student_rm" class="form-control">
+                        <label for="rm">RM:</label>
+                        <input  type="text" name="rm" maxlength="6" id="rm" class="form-control">
 
                         <button type="submit" class="btn mt-3 btn-dark">Cadastrar</button>
 
                     </form>
                     
+                                        
                     <?php if(isset($_GET['err'])): ?>
-                        <div class="mt-4 alert-danger alert">
+                        <div class="mt-4 alert-danger alert-dismissible alert fade show" role="alert">
                             <?=$_GET['err']?>
                         </div>
                     <?php endif ?>
 
                     <?php if(isset($_GET['success'])): ?>
-                        <div class="mt-4 alert-success alert">
+                        <div class="mt-4 alert-success alert-dismissible alert fade show" role="alert">
                             <?=$_GET['success']?>
                         </div>
                     <?php endif ?>
-            
+
+
+                    <div class="mt-4 alert-warning alert">
+                        É necessário estar logado para continuar.
+                    </div>
+                         
                 </div>
             </div>
-        <?php }//fim else!! ?>
+        <?php }//fim else!!
+        ?>
 
     </body>
 </html>
