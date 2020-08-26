@@ -57,9 +57,11 @@
                 if($u){
                     $successMessage = urlencode("Parabéns " . $u->name . ", você logou com sucesso.\nAguarde para ser redirecionado!");
                     $_SESSION['auth'] = 'logado';
+                    $_SESSION['user'] = $u;
                     header("location: login.php?success=$successMessage");
                 }else{
-                    throw new Error('RM ou senha Incorreto(s)');
+                    $e = "RM ou Senha Incorreto(s)";
+                    header("location: login.php?err=$e");
                 }
             }else{
         ?>
@@ -94,11 +96,6 @@
                             }, 3000)
                         </script>
                     <?php endif ?>
-
-
-                    <!-- <div class="mt-4 alert-warning alert">
-                        É necessário estar logado para criar um cadastro auxílio emergencial.
-                    </div> -->
 
                     <a href="cadastro.php">Novo por aqui? Cadastre se aqui!</a>
                     

@@ -114,7 +114,7 @@ class User{
                     );
                 }
             }else{
-                return new PDOException('Não existe um usuário com esse nome');
+                return false;
             }
         
         }catch(Exception $e){
@@ -124,6 +124,8 @@ class User{
             return false;
         }
     }
+
+    
 
 }
 ?>

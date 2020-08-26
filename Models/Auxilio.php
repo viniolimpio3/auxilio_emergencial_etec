@@ -14,7 +14,6 @@ class Auxilio{
     public function insert($userID){
         if(!require 'database/connection.php') require 'database/connection.php';
         try{
-
             $query = "insert into aux_em(user_id)values('$userID')";
             $c = $connection->prepare($query);
 
@@ -33,6 +32,22 @@ class Auxilio{
 
     }
 
+    public function exists($userID){
+        if(!require 'database/connection.php') require 'database/connection.php';
+        try{
+            $query = "select id from aux_em where user_id = $userID LIMIT 1";
+            $c = $connection->prepare($query);
+            if($c->execute() and $c->rowCount()>0){
+                while($r = $c->fetch(PDO::FETCH_OBJ)){
+                    return $r->id;
+                }
+            }else{
+                return false;
+            }
+        }catch(PDOException $e){
+            throw new PDOException($e->getMessage());
+        }
+    }
 }
 
 ?>
