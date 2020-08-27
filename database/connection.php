@@ -1,5 +1,5 @@
 <?php
-require('env.php');
+include 'env.php';
 try{
     $connection = new PDO("mysql:host=localhost; dbname=". DB, DB_USER, DB_PASS );
     $connection->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);

@@ -18,6 +18,16 @@
             window.history.pushState({}, "Hide", '<?php echo $_SERVER['PHP_SELF'];?>');
         }
     </script>
+    <style>
+
+        .flex-between{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+
+    </style>
+
 
     <body>
         <?php
@@ -41,7 +51,12 @@
 
             }else{?>  
                 <div class="container mt-5">
-                    <h3>Cadastro Auxílio Emergencial <small>Alunos do Ensino médio</small></h3>
+
+                    <div class="flex-between mb-3">
+                        <h3>Cadastro Auxílio Emergencial <small>Alunos do Ensino médio</small></h3>
+
+                        <a href="doLogout.php" class="btn btn-danger">Sair</a>
+                    </div>
                     <div class="jumbotron">
 
                             <?php if(!$cadastrado):?>
@@ -131,6 +146,7 @@
             document.querySelector('#temp').style.display = 'block'
         }
         btnCancelar.onclick = function(){
+            
             btnAlterar.style.display = 'block'
             btnCancelar.style.display = 'none'
             submitButton.style.display = 'none'
