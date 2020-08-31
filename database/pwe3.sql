@@ -8,11 +8,13 @@ drop table if exists user;
 create table user(
 	id int auto_increment,
     name varchar(60) not null,
+    email varchar(60) not null,
     city varchar(40) not null,
     state varchar(20) not null,
     school varchar(60) not null,
     senha text not null,/*hash - sha1*/
     rm char(6) not null,
+    forgot_pass boolean not null default false,
     primary key(id)
 );
 

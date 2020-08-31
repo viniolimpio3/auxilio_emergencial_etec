@@ -27,16 +27,11 @@
             require 'Models/User.php';
             use Model\User;
             
+
             $input_values = array();
             
             $acceptedInputs = array(
-                'user_rm' => 'RM',
-                'user_name' => 'Nome',
-                'user_mail' => 'Nome',
-                'user_city' => 'Cidade',
-                'user_state' => 'Estado',
-                'user_school' => 'Escola',
-                'pass' => 'Senha'
+                'email' => 'RM',
             );
 
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'ok' ){
