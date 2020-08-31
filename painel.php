@@ -19,7 +19,6 @@
         }
     </script>
     <style>
-
         .flex-between{
             display: flex;
             flex-direction: row;
@@ -31,6 +30,7 @@
 
     <body>
         <?php
+
             if(!isset($_SESSION)) session_start();
             if(!require 'isAuthorized.php') header('location:login.php');
 

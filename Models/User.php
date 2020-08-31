@@ -7,7 +7,6 @@ use PDOException;
 class User{
 
     function __construct($name="", $pass="" ,$city="", $state="", $school="", $rm=""){
-
         $this->userName = $name;
         $this->userPass = $pass;
         $this->city = $city;
@@ -17,17 +16,17 @@ class User{
         $this->id = 0;
     }
 
-    function insertAll(){
+    function insert(){
         if(!require 'database/connection.php') require 'database/connection.php';
         
         try{
-            
-            $query = "INSERT INTO user ( name, city, state, school, rm)values(
+            $query = "INSERT INTO user ( name, city, state, school, rm, senha)values(
                 '". $this->userName ."', 
                 '". $this->city."', 
                 '". $this->state."',
                 '". $this->school ."', 
-                '". $this->rm ."'
+                '". $this->rm ."',
+                '". $this->userPass ."'
             )";
             
             $c = $connection->prepare($query);
@@ -123,9 +122,7 @@ class User{
             throw new PDOException($e->getMessage());
             return false;
         }
-    }
-
-    
+    }    
 
 }
 ?>
