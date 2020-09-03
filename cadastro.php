@@ -32,7 +32,7 @@
             $acceptedInputs = array(
                 'user_rm' => 'RM',
                 'user_name' => 'Nome',
-                'user_mail' => 'Nome',
+                'user_mail' => 'Email',
                 'user_city' => 'Cidade',
                 'user_state' => 'Estado',
                 'user_school' => 'Escola',
@@ -44,17 +44,16 @@
                 foreach($acceptedInputs as $key => $input){
 
                     if( !isset($_POST[$key]) or $_POST[$key] === '') {
-                        $err =  "O campo $input é obrigatório!";
+                        $err =  urlencode("O campo $input é obrigatório!");
                         header("location: cadastro.php?err=$err");
                         exit;
                     }else{
                         $input_values[$key] = $_POST[$key];
                     }
-
                 }         
                 $hashedPass = sha1($input_values['pass']);
                 print_r($input_values);
-                $user = new User($input_values['user_name'], $hashedPass, $input_values['user_city'], $input_values['user_state'], $input_values['user_school'],$input_values['user_rm']);                
+                $user = new User($input_values['user_name'], $input_values['user_mail'], $hashedPass, $input_values['user_city'], $input_values['user_state'], $input_values['user_school'],$input_values['user_rm']);                
                 $u = $user->insert();
                 if($u){
                     $successMessage = urlencode("Parabéns " . $input_values['user_name'] . ", você foi cadastrado com sucesso.\nAguarde para ser redirecionado!");
@@ -76,6 +75,9 @@
 
                         <label for="user_name">Nome:</label>
                         <input autocomplete="off" type="text" name="user_name" id="user_name" class="form-control">
+
+                        <label for="user_mail">Email:</label>
+                        <input autocomplete="off" type="text" name="user_mail" id="user_mail" class="form-control">
 
                         <label for="user_city">Cidade:</label>
                         <input autocomplete="off" type="text" name="user_city" id="user_city" class="form-control">

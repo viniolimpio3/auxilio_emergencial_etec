@@ -6,8 +6,9 @@ use PDOException;
 
 class User{
 
-    function __construct($name="", $pass="" ,$city="", $state="", $school="", $rm=""){
+    function __construct($name="", $mail="", $pass="" ,$city="", $state="", $school="", $rm=""){
         $this->userName = $name;
+        $this->userMail = $mail;
         $this->userPass = $pass;
         $this->city = $city;
         $this->state = $state;
@@ -18,10 +19,10 @@ class User{
 
     function insert(){
         if(!require 'database/connection.php') require 'database/connection.php';
-        
         try{
-            $query = "INSERT INTO user ( name, city, state, school, rm, senha)values(
+            $query = "INSERT INTO user ( name, email, city, state, school, rm, senha)values(
                 '". $this->userName ."', 
+                '". $this->userMail ."', 
                 '". $this->city."', 
                 '". $this->state."',
                 '". $this->school ."', 
@@ -57,6 +58,7 @@ class User{
                 while($row = $c->fetch(PDO::FETCH_OBJ)){
                     $id = $row->id;
                     $name = $row->name;
+                    $mail = $row->email;
                     $city = $row->city;
                     $state = $row->state;
                     $school = $row->school;
@@ -65,6 +67,7 @@ class User{
                     return (Object) array(
                         'id' => $id,
                         'name' => $name,
+                        'email'=> $mail,
                         'city' => $city,
                         'state' => $state,
                         'school' => $school,
@@ -86,18 +89,20 @@ class User{
         }
     }
 
-    public function login($user_rm, $pass){
+    public function login($user_login, $pass, $loginType){
         if(!require 'database/connection.php') require 'database/connection.php';
 
-        if(!isset($user_rm) || !isset($pass)) return false;
+        if(!isset($user_login) || !isset($pass)) return false;
         try{
-            $query = "SELECT * from user WHERE rm = '$user_rm' AND senha = '$pass' LIMIT 1";
+
+            $query = "SELECT * from user WHERE $loginType = '$user_login' AND senha = '$pass' LIMIT 1";
             $c = $connection->prepare($query);
             if($c->execute() && $c->rowCount() > 0){
 
                 while($row = $c->fetch(PDO::FETCH_OBJ)){
                     $id = $row->id;
                     $name = $row->name;
+                    $mail = $row->email;
                     $city = $row->city;
                     $state = $row->state;
                     $school = $row->school;
@@ -106,6 +111,7 @@ class User{
                     return (Object) array(
                         'id' => $id,
                         'name' => $name,
+                        'email'=> $mail,
                         'city' => $city,
                         'state' => $state,
                         'school' => $school,

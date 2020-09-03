@@ -22,6 +22,13 @@
     <script src="assets/js/main.js"></script>
     <body>
         <?php
+
+        function dd($v, $exit=false){
+            echo '<pre>';
+            print_r($v);
+            echo '</pre>';
+            if($exit) exit();
+        }
             if(!isset($_SESSION)) session_start();
             
             require 'Models/User.php';
@@ -29,12 +36,13 @@
             
             $input_values = array();
             
-            $acceptedInputs = array(
-                'user_rm' => 'RM',
-                'pass' => 'Senha'
-            );
-
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'yes' ){
+                $lType = $_POST['login_type'];
+                $acceptedInputs = array(
+                    "{$lType}_input" => 'Login',
+                    'pass' => 'Senha'
+                );
+
 
                 foreach($acceptedInputs as $key => $input){
 
@@ -52,8 +60,10 @@
 
                 $user = new User();
                   
-                $u = $user->login($input_values['user_rm'], $hashedPass);
+                $u = $user->login($input_values["{$lType}_input"], $hashedPass, $lType);
                 
+                dd($u);   
+
                 if($u){
                     $successMessage = urlencode("Parabéns " . $u->name . ", você logou com sucesso.\nAguarde para ser redirecionado!");
                     $_SESSION['auth'] = 'logado';
@@ -69,13 +79,22 @@
                 <h3>Cadastro Auxílio Emergencial <small>Alunos do Ensino médio</small></h3>
                 <div class="jumbotron">
                     <form action="login.php?send=yes" method="POST" >
-                        <label for="user_rm">RM:</label>
-                        <input onkeypress="return onlyNumber()" maxlength="6" autocomplete="off" type="text" name="user_rm" id="user_rm" class="form-control">
+
+                        <label id="rm_lb" for="user_rm">RM:</label>
+                        <input id="rm_input" name="rm_input" onkeypress="return onlyNumber()" maxlength="6" autocomplete="off" type="text" name="user_rm" id="user_rm" class="form-control">
+
+                        <label hidden id="email_lb" for="user_mail">Email:</label>
+                        <input hidden id="email_input" name="email_input" autocomplete="off" type="text" name="user_mail" id="user_mail" class="form-control">
+
+                        <input name="login_type" id="login_type" value="rm" type="hidden">  
 
                         <label for="pass">Senha:</label>
                         <input autocomplete="off" type="password" name="pass" id="pass" class="form-control">
 
-                        <button type="submit" class="btn mt-3 btn-dark">Enviar</button>
+                        <button type="submit" class="btn mt-3 mr-3 btn-dark">Enviar</button> 
+                        <button type="button" id="btn_email" class="btn mt-3  btn-light">Logar com Email</button> 
+                        <button type="button" id="btn_rm" hidden class="btn mt-3 btn-light">Logar com RM</button> 
+
                     </form>
                     
                     <?php if(isset($_GET['err'])): ?>
@@ -103,6 +122,46 @@
             </div>
         <?php }//fim else!!
         ?>
+
+        <script>
+            function hide(elements){
+                elements.forEach( element =>{
+                    element.setAttribute('hidden','')
+                } )
+            }
+            function show(elements){
+                elements.forEach(element =>{
+                    element.removeAttribute('hidden')
+                })
+            }
+
+            const rmLb = document.getElementById('rm_lb')
+            const rmInput = document.getElementById('rm_input')
+
+            const emailLb = document.getElementById('email_lb')
+            const emailInput = document.getElementById('email_input')
+
+            const btnMail = document.getElementById('btn_email')
+            const btnRm = document.getElementById('btn_rm')
+
+            let inputType = document.getElementById('login_type')
+            
+
+            btnMail.onclick = function(){
+                hide([rmLb, rmInput, btnMail])
+                show([emailLb, emailInput, btnRm])
+
+                inputType.value = 'email'
+            }
+
+            btnRm.onclick = function(){
+                show([rmLb, rmInput, btnMail])
+                hide([emailLb, emailInput, btnRm])
+
+                inputType.value = 'rm'
+            }
+
+        </script>
 
     </body>
 </html>
