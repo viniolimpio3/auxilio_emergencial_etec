@@ -24,7 +24,8 @@
         <?php
             if(!isset($_SESSION)) session_start();
             
-            require 'Models/User.php';
+            if(!require './Models/User.php') require './Models/User.php';
+
             use Model\User;
             
             $input_values = array();
@@ -112,8 +113,8 @@
                             }, 3000)
                         </script>
                     <?php endif ?>
-
-                    <a href="login.php">Possui uma conta? Entre com seu RM!</a>                    
+                    <br>
+                    <a href="login.php">Possui uma conta? Faça o Login!</a>                    
                 </div>
             </div>
         <?php }//fim else!!

@@ -17,7 +17,6 @@ create table user(
     primary key(id)
 );
 
-
 create table if not exists aux_em(
 	id int auto_increment,
     user_id int not null,/*not null - indica relacionamento obrigatório!*/

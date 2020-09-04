@@ -1,8 +1,9 @@
 <?php namespace Mailer;
 
+
 use PHPMailer;
 
-if(! require '../libs/phpmailer/class.phpmailer.php') require '../libs/phpmailer/class.phpmailer.php';
+if(! require __DIR__ . '/../libs/phpmailer/class.phpmailer.php') require '../libs/phpmailer/class.phpmailer.php';
 if(! require 'env.php') require 'env.php';
 
 class Mailer{

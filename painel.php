@@ -35,7 +35,8 @@
             if(!require 'isAuthorized.php') header('location:login.php');
 
             $user = $_SESSION['user'];
-            require 'Models/Auxilio.php';
+            if(!require './Models/Auxilio.php') require './Models/Auxilio.php';
+
             use Model\Auxilio;
             $aux = new Auxilio();
 

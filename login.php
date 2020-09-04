@@ -30,10 +30,10 @@
             if($exit) exit();
         }
             if(!isset($_SESSION)) session_start();
-            
-            require 'Models/User.php';
+    
+            if(!require './Models/User.php') require './Models/User.php';
             use Model\User;
-            
+    
             $input_values = array();
             
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'yes' ){
@@ -62,7 +62,6 @@
                   
                 $u = $user->login($input_values["{$lType}_input"], $hashedPass, $lType);
                 
-                dd($u);   
 
                 if($u){
                     $successMessage = urlencode("Parabéns " . $u->name . ", você logou com sucesso.\nAguarde para ser redirecionado!");
@@ -115,8 +114,10 @@
                             }, 3000)
                         </script>
                     <?php endif ?>
-
+                    <br>
                     <a href="cadastro.php">Novo por aqui? Cadastre se aqui!</a>
+                    <br> <br>   
+                    <a href="forgotPass.php">Esqueceu a senha?</a>
                     
                 </div>
             </div>

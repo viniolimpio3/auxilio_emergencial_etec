@@ -22,16 +22,17 @@
     <script src="assets/js/main.js"></script>
     <body>
         <?php
+            $base_url = $_SERVER['SERVER_NAME'];
             if(!isset($_SESSION)) session_start();
+            if(!require './Models/User.php') require './Models/User.php';
+            if(!require './Models/Mailer.php') require './Models/Mailer.php';
             
-            require 'Models/User.php';
             use Model\User;
             
-
             $input_values = array();
             
             $acceptedInputs = array(
-                'email' => 'RM',
+                'user_mail' => 'email',
             );
 
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'ok' ){
@@ -46,45 +47,66 @@
                         $input_values[$key] = $_POST[$key];
                     }
 
-                }         
-                $hashedPass = sha1($input_values['pass']);
-                print_r($input_values);
-                $user = new User($input_values['user_name'], $hashedPass, $input_values['user_city'], $input_values['user_state'], $input_values['user_school'],$input_values['user_rm']);                
-                $u = $user->insert();
-                if($u){
-                    $successMessage = urlencode("Parabéns " . $input_values['user_name'] . ", você foi cadastrado com sucesso.\nAguarde para ser redirecionado!");
-                    $_SESSION['auth'] = 'logado';
-                    $_SESSION['user'] = $u;
-                    header("location: cadastro.php?success=$successMessage");
-                }else{
-                    $e = urlencode( "Não foi possível concluir o cadastro :/");
-                    header("location: cadastro.php?err=$e");
+                }      
+                
+                $mail = $input_values['user_mail'];
+
+                $u = new User();
+
+                $user = $u->get(['email' => $mail]);
+
+                if(!$user) {
+                    $err = urlencode("Digite um email válido!");
+                    header("location:forgotPass.php?err=$err");
+                    exit();
                 }
+
+                if($user->forgot_pass){
+                    $err = urlencode("Ocorreu um erro\nTente novamente Mais tarde");
+                    header("location:forgotPass.php?err=$err");
+                    exit();
+                }
+
+                $mailer = new Mailer\Mailer();
+
+                $body = "";
+                $mailer->send($mail, $user->name, 'Recuperar Senha[]',$body);
+
+                $filter=array(  
+                    'id' => $user->id,
+                    'name' => $user->name,
+                );
+                $data = array('forgot_pass' => true);
+                $update = $u->update( $filter, $data);
+
+                
+
+
+                
+
+                // $user = new User($input_values['user_name'], $hashedPass, $input_values['user_city'], $input_values['user_state'], $input_values['user_school'],$input_values['user_rm']);                
+                // $u = $user->insert();
+                // if($u){
+                //     $successMessage = urlencode("Parabéns " . $input_values['user_name'] . ", você foi cadastrado com sucesso.\nAguarde para ser redirecionado!");
+                //     $_SESSION['auth'] = 'logado';
+                //     $_SESSION['user'] = $u;
+                //     header("location: cadastro.php?success=$successMessage");
+                // }else{
+                //     $e = urlencode( "Não foi possível concluir o cadastro :/");
+                //     header("location: cadastro.php?err=$e");
+                // }
             }else{
         ?>
             <div class="container mt-5">
-                <h3>Cadastro Auxílio Emergencial <small>Alunos do Ensino médio</small></h3>
+                <h3>Esqueceu Senha <small>Alunos do Ensino médio</small></h3>
                 <div class="jumbotron">
-                    <form action="cadastro.php?send=ok" method="POST" >
-                        <label for="user_rm">RM:</label>
-                        <input onkeypress="return onlyNumber()" maxlength="6" autocomplete="off" type="text" name="user_rm" id="user_rm" class="form-control">
+                    <form action="forgotPass.php?send=ok" method="POST" >
 
-                        <label for="user_name">Nome:</label>
-                        <input autocomplete="off" type="text" name="user_name" id="user_name" class="form-control">
-
-                        <label for="user_city">Cidade:</label>
-                        <input autocomplete="off" type="text" name="user_city" id="user_city" class="form-control">
-
-                        <label for="user_state">Estado:</label>
-                        <input autocomplete="off" type="text" name="user_state" id="user_state" class="form-control">
-
-                        <label for="user_school">Escola:</label>
-                        <input autocomplete="off" type="text" name="user_school" id="user_school" class="form-control">
-
-                        <label for="pass">Senha:</label>
-                        <input autocomplete="off" type="password" name="pass" id="pass" class="form-control">
+                        <label for="user_mail">Email:</label>
+                        <input autocomplete="off" type="email" name="user_mail" id="user_mail" class="form-control">
 
                         <button type="submit" class="btn mt-3 btn-dark">Enviar</button>
+
                     </form>
                     
                     <?php if(isset($_GET['err'])): ?>
@@ -98,12 +120,6 @@
                         <div class="mt-4 alert-success alert fade show" role="alert">
                             <?= urldecode( $_GET['success']); ?>
                         </div>
-
-                        <script type="text/javascript">
-                            setTimeout(() =>{
-                                window.location = 'login.php';
-                            }, 3000)
-                        </script>
                     <?php endif ?>
 
                     <a href="login.php">Possui uma conta? Entre com seu RM!</a>                    
