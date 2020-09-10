@@ -38,7 +38,7 @@ class Mailer{
     }
 
     public function send($to, $to_name, $subject, $body){       
-        $this->mail->Subject = $subject;
+        $this->mail->Subject = "[Auxílio Emergencial] $subject";
         $this->mail->Body = $body;
         $this->mail->AddAddress($to);
         $this->mail->IsHTML(true);

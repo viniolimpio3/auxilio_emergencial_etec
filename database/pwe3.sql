@@ -14,6 +14,7 @@ create table user(
     senha text not null,/*hash - sha1*/
     rm char(6) not null unique, 
     forgot_pass boolean not null default false,
+    url_hash varchar(255),
     primary key(id)
 );
 

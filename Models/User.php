@@ -74,6 +74,8 @@
                 if(isset($filtros['state'])) $query .= "AND state= '".$filtros['state']."' ";
                 if(isset($filtros['school'])) $query .= "AND school= '".$filtros['school']."' ";
                 if(isset($filtros['rm'])) $query .= "AND rm= '".$filtros['rm']."' ";
+                if(isset($filtros['url_hash'])) $query .= "AND url_hash= '".$filtros['url_hash']."' ";
+
 
                 $query .= "LIMIT 1";
 
@@ -167,7 +169,7 @@
             if(!require 'database/connection.php') require 'database/connection.php';
             try{
                 
-                $query = "UDPATE user SET ";
+                $query = "UPDATE user SET ";
                 
                 // foreach($this->userDefaultInputs as $index => $field){         
                 //     if(isset($data[$field])) $query .= "$field= '".$data[$field]."', ";
@@ -178,14 +180,15 @@
                 if(isset($data['state'])) $query .= " state = '".$data['state']."' ";
                 if(isset($data['school'])) $query .= " school = '".$data['school']."' ";
                 if(isset($data['rm'])) $query .= " rm = '".$data['rm']."' ";
-                if(isset($data['forgot_pass'])) $query .= " forgot_pass = ".$data['forgot_pass']." ";
+                if(isset($data['forgot_pass'])) $query .= " forgot_pass = ".$data['forgot_pass']." , ";
+                if(isset($data['url_hash'])) $query .= " url_hash = '".$data['url_hash']."' ";
 
                 
                 $query .= " WHERE 1=1 ";
 
                 foreach($this->userDefaultInputs as $field){
                     if($field == 'id'){
-                        if(isset($filtros['id'])) $query .= " AND id = ".$filtros['id']." ";
+                        if(isset($filtros['id'])) $query .= " AND id = '".$filtros['id']."' ";
                     } else{
                         if(isset($filtros[$field])) $query .= " AND $field='" . $filtros[$field] . "' ";
                     }
@@ -193,18 +196,17 @@
 
                 print_r($query);
 
-                // $c = $connection->prepare($query);
+                $c = $connection->prepare($query);
 
-                // if($c->execute() and $c->rowCount() > 0){
-                //     return true;
-                // }else{
-                //     return false;
-                // }
-
-
+                if($c->execute() and $c->rowCount() > 0){
+                    return true;
+                }else{
+                    return false;
+                }
 
             }catch(PDOException $e){
                 echo 'erro';
+                print_r($e);
                 throw new PDOException($e->getMessage());
                 return false;
             }

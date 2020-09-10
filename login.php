@@ -22,13 +22,13 @@
     <script src="assets/js/main.js"></script>
     <body>
         <?php
-
-        function dd($v, $exit=false){
-            echo '<pre>';
-            print_r($v);
-            echo '</pre>';
-            if($exit) exit();
-        }
+            // if(require './isAuthorized.php') header('location: painel.php');
+            function dd($v, $exit=false){
+                echo '<pre>';
+                print_r($v);
+                echo '</pre>';
+                if($exit) exit();
+            }
             if(!isset($_SESSION)) session_start();
     
             if(!require './Models/User.php') require './Models/User.php';
@@ -53,7 +53,6 @@
                     }else{
                         $input_values[$key] = $_POST[$key];
                     }
-
                 }         
         
                 $hashedPass = sha1($input_values['pass']);
@@ -108,7 +107,7 @@
                             <?= urldecode( $_GET['success']); ?>
                         </div>
 
-                        <script type="text/javascript">
+                       <script type="text/javascript">
                             setTimeout(() =>{
                                 window.location = 'painel.php';
                             }, 3000)

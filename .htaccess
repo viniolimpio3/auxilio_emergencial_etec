@@ -1,0 +1,7 @@
+DirectoryIndex login.php 404.php
+RewriteEngine on
+
+#Página de erro
+RewriteCond %{REQUEST_FILENAME} !-f  
+RewriteCond %{REQUEST_FILENAME} !-d  
+RewriteRule .* 404.php [L] 
