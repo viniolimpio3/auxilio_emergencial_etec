@@ -13,15 +13,13 @@
     </head>
     <script>    
         //RETIRAR QUERIES da url QUANDO DER UM REFRESH
-        if(typeof window.history.pushState == 'function') {
-            window.history.pushState({}, "Hide", '<?php echo $_SERVER['PHP_SELF'];?>');
-        }
+        // if(typeof window.history.pushState == 'function') {
+        //     window.history.pushState({}, "Hide", '<?php echo $_SERVER['PHP_SELF'];?>');
+        // }
 
     </script>
 
-
-    <?php 
-        
+    <?php         
     ?>
 
     <script src="assets/js/main.js"></script>
@@ -35,18 +33,16 @@
             use Model\User;
             $u = new User();
 
-
             function validateHash($hash){
                 try{
-                    $u = new User();
-                    print_r($hash);
+                    $u = new User();                    
                     $user = $u->get(['url_hash' => $hash]);
                     if(!$user || $user === null || !count( (array) $user) > 0 ) return false;
 
                     return $user;
                 }catch(Exception $e){
                     $e = urlencode("Erro: {$e->getMessage()}");
-                    header("location: forgotPass.php?err=$e");
+                    header("location: forgotPass.php?err=$e&h=$hash");
                 }
             }
 
@@ -55,45 +51,83 @@
             if(isset($_REQUEST['h']) and $_REQUEST['h'] !== '' and $_REQUEST['h'] !== null):
                 $hash = $_REQUEST['h'];
                 $input_values = array();
-                
-                $acceptedInputs = array(
-                    'pass' => 'Senha',
-                    'conf_pass' => 'Confirmação de senha'
-                );
-                foreach($acceptedInputs as $key => $input){
 
-                    if( !isset($_POST[$key]) or $_POST[$key] === '') {
-                        $err =  "O campo $input é obrigatório!";
-                        header("location: forgotPass.php?err=$err");
-                        exit;
-                    }else{
-                        $input_values[$key] = $_POST[$key];
-                    }
-
-                }
-                
                 $user = validateHash($hash);
                 
                 if(!$user) {
                     $e = urlencode('Erro. Tente novamente mais tarde');
                     header("location:forgotPass.php?err=$e");
                 }
+                if(isset($_REQUEST['cp']) and $_REQUEST['cp'] === 'ok' ){
+                    $acceptedInputs = array(
+                        'pass' => 'Senha',
+                        'conf_pass' => 'Confirmação de senha'
+                    );
+                    foreach($acceptedInputs as $key => $input){
+                        if( !isset($_POST[$key]) or $_POST[$key] === '') {
+                            $err =  "O campo $input é obrigatório!";
+                            header("location: forgotPass.php?err=$err&h=$hash");
+                            exit;
+                        }else{
+                            $input_values[$key] = $_POST[$key];
+                        }
+                    }
 
-                
-                
+                    if($input_values['pass'] !== $input_values['conf_pass']){
+                        $e = urlencode('As senhas devem ser exatamente iguais');
+                    }
+                    $hashP = sha1($input_values['conf_pass']);
+                         
+                    $update = $u->update(['id' => $user->id],['senha'=>$hashP]);
 
-            ?>
+                    if($update){
+                        $s = urlencode("{$user->name}, você atualizou sua senha com sucesso. Você será redirecionado para o login.");
+                        header("location: forgotPass.php?h=$hash&success-l=$s");
+                    }else{
+                        $e = "Não foi possível atualizar sua senha. Tente novamente";
+                        header("location: forgotPass.php?h=$hash&err=$e");
+                    }
+                }else{
+                ?>
+                    <div class="container mt-5">
+                        <h3>Atualizar Senha <small>Alunos do Ensino médio - Auxílio Emergencial</small></h3>
+                        <div class="jumbotron">
+                            
+                            <form action="forgotPass.php?h=<?= $hash ?>&&cp=ok" method="POST" >
 
-                
-            <?php
+                                <label for="user_mail">Senha:</label>
+                                <input autocomplete="off" type="password" name="pass" id="pass" class="form-control">
+
+                                <label for="conf_pass">Confirme a Senha:</label>
+                                <input autocomplete="off" type="password" name="conf_pass" id="conf_pass" class="form-control">
+
+                                <button type="submit" class="btn mt-3 btn-dark">Enviar</button>
+
+                            </form>
+                            
+                            <a href="login.php">Possui uma conta? Entre com seu RM!</a>   
+                            
+                            <?php if(isset($_GET['success-l'])): ?>
+                                <div class="mt-4 alert-success alert fade show" role="alert">
+                                    <?= urldecode( $_GET['success-l']); ?>
+                                </div>
+
+                                <script type="text/javascript">
+                                    setTimeout(() =>{
+                                        window.location = 'login.php';
+                                    }, 3000)
+                                </script>
+                            <?php endif ?>
+                        </div>
+                    </div>
+                <?php
+                }
             endif;   
 
             // -----------------------------------------------------------------------------------------------------
             //ENVIO DE EMAIL
             
-            
-            if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'ok' ){
-                
+            if( isset($_REQUEST['send']) and $_REQUEST['send'] === 'ok' and !isset($_REQUEST['h'])){
                 $input_values = array();
                 
                 $acceptedInputs = array(
@@ -161,19 +195,8 @@
                     header("location:forgotPass.php?err=$e");
                 }
                 
-
-                // $user = new User($input_values['user_name'], $hashedPass, $input_values['user_city'], $input_values['user_state'], $input_values['user_school'],$input_values['user_rm']);                
-                // $u = $user->insert();
-                // if($u){
-                //     $successMessage = urlencode("Parabéns " . $input_values['user_name'] . ", você foi cadastrado com sucesso.\nAguarde para ser redirecionado!");
-                //     $_SESSION['auth'] = 'logado';
-                //     $_SESSION['user'] = $u;
-                //     header("location: cadastro.php?success=$successMessage");
-                // }else{
-                //     $e = urlencode( "Não foi possível concluir o cadastro :/");
-                //     header("location: cadastro.php?err=$e");
                 // }
-            }else{
+            }else if(!isset($_REQUEST['h'])){
         ?>
             <div class="container mt-5">
                 <h3>Esqueceu Senha <small>Alunos do Ensino médio</small></h3>
@@ -187,23 +210,24 @@
 
                     </form>
                     
-                    <?php if(isset($_GET['err'])): ?>
-                        <div class="mt-4 alert-danger alert fade show" role="alert">
-                            <?=$_GET['err']?>
-                        </div>
-                    <?php endif ?>
-
-                    <?php if(isset($_GET['success'])): ?>
-                        <div class="mt-4 alert-success alert fade show" role="alert">
-                            <?= urldecode( $_GET['success']); ?>
-                        </div>
-                    <?php endif ?>
-
+                    
                     <a href="login.php">Possui uma conta? Entre com seu RM!</a>                    
                 </div>
             </div>
-        <?php }//fim else!!
+            <?php }//fim else!!
         ?>
+        <div class="container">
+            <?php if(isset($_GET['err'])): ?>
+                <div class="mt-4 alert-danger alert fade show" role="alert">
+                    <?=$_GET['err']?>
+                </div>
+            <?php endif ?>
 
+            <?php if(isset($_GET['success'])): ?>
+                <div class="mt-4 alert-success alert fade show" role="alert">
+                    <?= urldecode( $_GET['success']); ?>
+                </div>
+            <?php endif ?>
+        </div>
     </body>
 </html>

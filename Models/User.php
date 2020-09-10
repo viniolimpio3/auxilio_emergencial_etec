@@ -74,6 +74,7 @@
                 if(isset($filtros['state'])) $query .= "AND state= '".$filtros['state']."' ";
                 if(isset($filtros['school'])) $query .= "AND school= '".$filtros['school']."' ";
                 if(isset($filtros['rm'])) $query .= "AND rm= '".$filtros['rm']."' ";
+
                 if(isset($filtros['url_hash'])) $query .= "AND url_hash= '".$filtros['url_hash']."' ";
 
 
@@ -182,6 +183,9 @@
                 if(isset($data['rm'])) $query .= " rm = '".$data['rm']."' ";
                 if(isset($data['forgot_pass'])) $query .= " forgot_pass = ".$data['forgot_pass']." , ";
                 if(isset($data['url_hash'])) $query .= " url_hash = '".$data['url_hash']."' ";
+
+                if(isset($data['senha'])) $query .= " senha='".$data['senha']."' ";
+
 
                 
                 $query .= " WHERE 1=1 ";
