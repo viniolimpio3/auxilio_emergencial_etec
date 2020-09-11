@@ -13,16 +13,59 @@ create table user(
     school varchar(60) not null,
     senha text not null,/*hash - sha1*/
     rm char(6) not null unique, 
+    
+    answered_questions boolean default false comment 'user_questions',
+    
     forgot_pass boolean not null default false,
-    url_hash varchar(255),
+    url_hash varchar(255), /*sha1*/
+    
     primary key(id)
 );
 
 create table if not exists aux_em(
-	id int auto_increment,
-    user_id int not null,/*not null - indica relacionamento obrigatório!*/
+	id int auto_increment unique,
+    user_id int unique not null,/*not null - indica relacionamento obrigatório!*/
     foreign key(user_id) references user ( id ),
     primary key(id)
+);
+
+create table if not exists user_docs(
+	id int auto_increment unique,
+    user_id int unique not null,
+    foreign key(user_id) references user ( id ),
+    
+    rg varchar(15) not null,
+    uf_rg char(2) not null,
+    cep varchar(9) not null,
+    cpf varchar(15) not null unique,
+    link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg'
+);
+
+create table if not exists user_questions(
+	id int auto_increment unique,
+    primary key( id ),
+    
+    user_id int unique not null,
+    foreign key(user_id) references user ( id ),
+    
+    internet boolean not null,
+    isp_name varchar(20) comment 'internet service provider name',
+    isp_configs longtext comment 'internet config',
+    
+    qt_pc_desktop int(2) not null,
+    qt_pc_notebook int(2) not null,
+    qt_sm_phone int(2) not null,
+    
+    pc_desktop_configs longtext default false,
+    pc_notebook_configs longtext default false,
+    sm_phone_configs longtext default false,
+    sm_phone2_configs longtext default false,
+    
+    qtd_in_house int(2),
+    renda_per_capita decimal(6,2) not null,
+    renda_ind decimal(6,2) not null,
+    
+    reason longtext not null comment 'reason of solicitation'
 );
 
 insert into user(name, email, city, state, school, senha, rm)

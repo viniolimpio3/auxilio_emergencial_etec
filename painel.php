@@ -62,14 +62,18 @@
 
                             <?php if(!$cadastrado):?>
                                 <h3>Agora que você logou, está apto para cadastrar um Auxílio emergencial!</h3>
+                                <p>Antes, responda as questões abaixo!</p>
                                 <form action="painel.php?cadastrar=s" method="POST" >
 
-                                    <button type="submit" class="btn mt-3 btn-dark">Cadastrar</button>
+                                    <?php if(!require 'questions_form.php') require 'questions_form.php' ?>
 
                                 </form> 
+
                             <?php else: ?>
+
+
                                 <div class="alert alert-success">
-                                    Parabéns, você está cadastrado no auxílio emergencial, <?= $user->name ?>
+                                    Parabéns <?= $user->name ?>, você está cadastrado no auxílio emergencial! 
                                 </div>
 
                                 <h2>Seus Dados:</h2>
