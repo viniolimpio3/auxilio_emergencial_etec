@@ -181,9 +181,9 @@
                 if(isset($data['state'])) $query .= " state = '".$data['state']."' ";
                 if(isset($data['school'])) $query .= " school = '".$data['school']."' ";
                 if(isset($data['rm'])) $query .= " rm = '".$data['rm']."' ";
-                if(isset($data['forgot_pass'])) $query .= " forgot_pass = ".$data['forgot_pass']." , ";
+                if(isset($data['forgot_pass'])) $query .= " forgot_passs = ".$data['forgot_pass']." , ";
                 if(isset($data['url_hash'])) $query .= " url_hash = '".$data['url_hash']."' ";
-
+                if(isset($data['answered_questions'])) $query .= " answered_questions = '".$data['answered_questions']."' ";
                 if(isset($data['senha'])) $query .= " senha='".$data['senha']."' ";
 
 

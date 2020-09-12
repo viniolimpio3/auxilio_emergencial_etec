@@ -29,17 +29,17 @@ create table if not exists aux_em(
     primary key(id)
 );
 
-create table if not exists user_docs(
-	id int auto_increment unique,
-    user_id int unique not null,
-    foreign key(user_id) references user ( id ),
+-- create table if not exists user_docs(
+-- 	id int auto_increment unique,
+--     user_id int unique not null,
+--     foreign key(user_id) references user ( id ),
     
-    rg varchar(15) not null,
-    uf_rg char(2) not null,
-    cep varchar(9) not null,
-    cpf varchar(15) not null unique,
-    link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg'
-);
+--     rg varchar(15) not null,
+--     uf_rg char(2) not null,
+--     cep varchar(9) not null,
+--     cpf varchar(15) not null unique,
+--     link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg'
+-- );
 
 create table if not exists user_questions(
 	id int auto_increment unique,
@@ -47,6 +47,13 @@ create table if not exists user_questions(
     
     user_id int unique not null,
     foreign key(user_id) references user ( id ),
+
+    rg varchar(15) not null,
+    uf_rg char(2) not null,
+    cep varchar(9) not null,
+    cpf varchar(15) not null unique,
+    link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg'
+
     
     internet boolean not null,
     isp_name varchar(20) comment 'internet service provider name',
@@ -59,7 +66,7 @@ create table if not exists user_questions(
     pc_desktop_configs longtext default false,
     pc_notebook_configs longtext default false,
     sm_phone_configs longtext default false,
-    sm_phone2_configs longtext default false,
+
     
     qtd_in_house int(2),
     renda_per_capita decimal(6,2) not null,

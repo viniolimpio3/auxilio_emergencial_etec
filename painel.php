@@ -36,42 +36,101 @@
 
             $user = $_SESSION['user'];
             if(!require './Models/Auxilio.php') require './Models/Auxilio.php';
+            if(!require './Models/Questions.php') require './Models/Questions.php';
+            if(!require './Models/User.php') require './Models/User.php';
+
 
             use Model\Auxilio;
             $aux = new Auxilio();
+
+            use Model\Questions;
+            $q_model = new Questions();
+
+            use Model\User;
+            $u = new User();
+
+            if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
 
             $cadastrado = $aux->exists($user->id);
             
             if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
                 
-                $inserted = $aux->insert($user->id);
-                if($inserted)
-                    header('painel.php');
-                else
-                    header('painel.php?err=Não Possível cadastrar...');
+                $obrigatorios = array(
+                    'rg' => 'RG',
+                    'uf_rg' => 'UF do RG',
+                    'cpf' => 'CPF',
+                    'cep' =>'CEP',
+                    'qt_pc_desktop' => 'Quantidade de computadores Desktop',
+                    'qt_pc_notebook' => 'Quantidade de computadores notebook',
+                    'qt_sm_phone' => 'Quantidade de computadores notebook',
+                    'renda_per_capita' => 'Renda per capita',
+                    'qtd_in_house' => 'Quantidade de habitantes em casa',
+                    'renda_ind' => 'Renda Individual',
+                    'internet' => 'Internet',
+                    'reason' => 'Motivo'
+                );
+
+                
+
+                foreach($obrigatorios as $key => $input){
+
+                    if( !isset($_POST[$key]) or $_POST[$key] === '') {
+                        $err =  "O campo $input é obrigatório!";
+                        header("location: painel.php?err=$err");
+                        exit;
+                    }else{
+                        $input_values[$key] = $_POST[$key];
+                    }
+                }      
+
+                //campos opcionais
+                $input_values['isp_configs'] = isset($_POST['isp_configs']) ? $_POST['isp_configs'] : '' ;
+                $input_values['pc_desktop_configs'] = isset($_POST['pc_desktop_configs']) ? $_POST['pc_desktop_configs'] : '' ;
+                $input_values['pc_notebook_configs'] = isset($_POST['pc_notebook_configs']) ? $_POST['pc_notebook_configs'] : '' ;
+                $input_values['sm_phone_configs'] = isset($_POST['sm_phone_configs']) ? $_POST['sm_phone_configs'] : '' ;
+
+                $inserted = $q_model->insert($input_values, $user->id);
+                
+                if(!$inserted){
+                    $e = urlencode('Ocorreu um erro! <br>Preencha novamente o formulário, e reenvie');
+                    header("painel.php?err=$e");   
+                }
+
+                $inserted_aux = $aux->insert($user->id);
+
+                if(!$inserted_aux){
+                    $e = urlencode('Ocorreu um erro! <br>Tente novamente mais tarde');
+                    header("painel.php?err=$e");   
+                }
+                $updateuser = $u->update(['id'=>$user->id],['answered_questions' =>true]);
+                if(!$inserted_aux){
+                    $e = urlencode('Ocorreu um erro! <br> Tente novamente mais tarde');
+                    header("painel.php?err=$e");   
+                }
+                
+                $s = urlencode("Parabéns {$user->name}, vc está cadastrado no auxílio emergencial. Aguarde para mais informações");
+                header("location: painel.php?success=$s");
+
+
 
             }else{?>  
                 <div class="container mt-5">
-
                     <div class="flex-between mb-3">
                         <h3>Cadastro Auxílio Emergencial <small>Alunos do Ensino médio</small></h3>
-
                         <a href="doLogout.php" class="btn btn-danger">Sair</a>
                     </div>
                     <div class="jumbotron">
 
                             <?php if(!$cadastrado):?>
-                                <h3>Agora que você logou, está apto para cadastrar um Auxílio emergencial!</h3>
-                                <p>Antes, responda as questões abaixo!</p>
+                                <h2>Boa <?= $user->name?>! </h2>
+                                <p>Responda as questões abaixo para concluir sua inscrição</p>
                                 <form action="painel.php?cadastrar=s" method="POST" >
 
                                     <?php if(!require 'questions_form.php') require 'questions_form.php' ?>
-
+                                    <button class="mt-5 btn btn-primary">Enviar</button>
                                 </form> 
 
                             <?php else: ?>
-
-
                                 <div class="alert alert-success">
                                     Parabéns <?= $user->name ?>, você está cadastrado no auxílio emergencial! 
                                 </div>
