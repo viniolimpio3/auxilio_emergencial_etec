@@ -120,30 +120,4 @@
             ?>
 
     </body>
-<!-- 
-    <script type="text/javascript">
-        const btnAlterar = document.querySelector('#alterar')
-        const submitButton = document.querySelector('#submit')
-        const btnCancelar = document.querySelector('#cancel')
-
-        const inputs = document.getElementsByClassName('inputs')
-
-        btnAlterar.onclick = function(){
-            submitButton.style.display = 'block'
-            btnCancelar.style.display = 'block'
-            btnAlterar.style.display = 'none'
-            
-            unsetReadOnlyInputs(inputs)
-            document.querySelector('#temp').style.display = 'block'
-        }
-        btnCancelar.onclick = function(){
-            
-            btnAlterar.style.display = 'block'
-            btnCancelar.style.display = 'none'
-            submitButton.style.display = 'none'
-            
-            setReadOnlyInputs(inputs)
-            document.querySelector('#temp').style.display = 'none'
-        }
-    </script> -->
 </html>
