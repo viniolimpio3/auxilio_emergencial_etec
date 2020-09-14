@@ -13,4 +13,3 @@ function validate($dataArray, $locationErr){
     }
     return $input_values;
 }
-?>

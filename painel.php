@@ -51,7 +51,6 @@
             $cadastrado = $aux->exists($user->id);
             
             if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
-               require_once 'includes/data_validation.php';
                 
                 $obrigatorios = array(
                     'rg' => 'RG',
@@ -109,7 +108,7 @@
                             <?php if(!$cadastrado):?>
                                 <h2>Boa <?= $user->name?>! </h2>
                                 <p>Responda as questões abaixo para concluir sua inscrição</p>
-                                <form action="painel.php?cadastrar=s" method="POST" >
+                                <form id="form" action="painel.php?cadastrar=s" method="POST" >
 
                                     <?php require_once 'includes/questions_form.php' ?>
 
@@ -142,24 +141,24 @@
                                     <p>RM:</p>
                                     <input  maxlength="6" onkeypress="return onlyNumber()" class="form-control inputs" readonly value="<?= $user->rm ?>" type="text">  <br>
 
+                                    <a href="bank_panel.php" class="btn btn-success">Confirmar</a>
+
+                                    
+                                    <br>
                                     <button class="btn btn-dark mt-3" hidden type="submit" id="submit">Enviar</button>
                                     <br>
                                     <button class="btn btn-danger mt-3" hidden type="button" id="cancel">Cancelar</button>
                                     <br>
-
                                     <div hidden id="temp" class="alert alert-danger">
                                         Ainda não desenvolvemos essa função :/
                                     </div>
-                                    
+
                                     <button class="btn btn-dark mr-3" type="button" id="alterar">Alterar</button>
                                     
-                                    <a href="bank_panel.php" class="btn btn-success">Confirmar</a>
                                 </form>
                             <?php endif; ?>
 
                             <?php 
-                                require_once 'includes/handler.php';
-
                                 err(10000);
                                 success('painel.php');
                             ?>
@@ -174,25 +173,24 @@
     </body>
     <?php if($cadastrado): ?>
         <script type="text/javascript">
-            const btnAlterar = document.querySelector('#alterar')
-            const submitButton = document.querySelector('#submit')
-            const btnCancelar = document.querySelector('#cancel')
+            const btnAlterar = id('alterar')
+            const submitButton = id('submit')
+            const btnCancelar = id('cancel')
 
             const inputs = document.getElementsByClassName('inputs')
 
             btnAlterar.onclick = function(){
-                show([submitButton, btnCancelar])
+                show([submitButton, btnCancelar, id('temp')])
                 hide([btnAlterar])
                 
                 unsetReadOnlyInputs(inputs)
-                document.querySelector('#temp').style.display = 'block'
+                
             }
             btnCancelar.onclick = function(){           
                 show([btnAlterar])
-                hide([btnCancelar, submitButton])
+                hide([btnCancelar, submitButton, id('temp')])
                 
                 setReadOnlyInputs(inputs)
-                document.querySelector('#temp').style.display = 'none'
             }
         </script>
     <?php endif ?>

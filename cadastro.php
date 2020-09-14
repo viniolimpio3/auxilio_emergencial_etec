@@ -40,7 +40,6 @@
             );
 
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'ok' ){
-                require_once 'includes/data_validation.php';
 
                 $input_values = validate($acceptedInputs, 'cadastro.php');
 

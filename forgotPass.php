@@ -16,7 +16,6 @@
     <?php         
     ?>
 
-
     <body>
         <?php
             $base_url = $_SERVER['SERVER_NAME'];

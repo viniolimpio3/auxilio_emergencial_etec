@@ -24,6 +24,7 @@
         <?php
 
             require_once __DIR__  . '/vendor/autoload.php';
+
             function dd($v, $exit=false){
                 echo '<pre>';
                 print_r($v);
@@ -38,13 +39,13 @@
             $input_values = array();
             
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'yes' ){
-                require_once 'includes/data_validation.php';
+                
                 $lType = $_POST['login_type'];
                 $acceptedInputs = array(
                     "{$lType}_input" => 'Login',
                     'pass' => 'Senha'
                 );
-                
+
                 $input_values = validate($acceptedInputs, 'login.php');    
         
                 $hashedPass = sha1($input_values['pass']);
@@ -88,7 +89,6 @@
                     </form>
                     
                     <?php //HANDLER 
-                        require_once 'includes/handler.php';
                         err(3000);
                         success('painel.php');
                     ?>
@@ -104,29 +104,18 @@
         ?>
 
         <script>
-            const rmLb = document.getElementById('rm_lb')
-            const rmInput = document.getElementById('rm_input')
-
-            const emailLb = document.getElementById('email_lb')
-            const emailInput = document.getElementById('email_input')
-
-            const btnMail = document.getElementById('btn_email')
-            const btnRm = document.getElementById('btn_rm')
-
-            let inputType = document.getElementById('login_type')
-            
-
+            const inputType = id('login_type')
+            const btnMail = id('btn_email')
             btnMail.onclick = function(){
-                hide([rmLb, rmInput, btnMail])
-                show([emailLb, emailInput, btnRm])
+                hide([ id('rm_lb'), id('rm_input'),id('btn_email') ])
+                show([ id('email_lb'), id('email_input'), id('btn_rm') ])
 
                 inputType.value = 'email'
             }
-
+            const btnRm = id('btn_rm')
             btnRm.onclick = function(){
-                show([rmLb, rmInput, btnMail])
-                hide([emailLb, emailInput, btnRm])
-
+                show([id('rm_lb'), id('rm_input'), id('btn_email')])
+                hide([id('email_lb'),id('email_input'), id('btn_rm')])
                 inputType.value = 'rm'
             }
 

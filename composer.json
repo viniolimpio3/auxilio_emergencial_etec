@@ -5,7 +5,12 @@
         "mpdf/mpdf": "^8.0"
     },
     "autoload": {
-        "classmap": ["Models/"]
+        "classmap": ["Models/"],
+        "files": [
+            "./includes/data_validation.php",
+            "./includes/handler.php",
+            "./includes/data_validation.php"
+        ]
     },
     "scripts": {
         "load":"composer dump-autoload"

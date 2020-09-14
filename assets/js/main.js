@@ -10,6 +10,9 @@ function onlyNumber(event){
         if(theEvent.preventDefault) theEvent.preventDefault()
     }
 }
+const id = element => document.getElementById(element)
+const e = element => document.querySelector(element)
+const log = (...data) => console.log(...data)
 
 function hide(elements){
 
