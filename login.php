@@ -19,7 +19,7 @@
 
     </script>
 
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/main.js?v=1"></script>
     <body>
         <?php
 
@@ -38,23 +38,14 @@
             $input_values = array();
             
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'yes' ){
+                require_once 'includes/data_validation.php';
                 $lType = $_POST['login_type'];
                 $acceptedInputs = array(
                     "{$lType}_input" => 'Login',
                     'pass' => 'Senha'
                 );
-
-
-                foreach($acceptedInputs as $key => $input){
-
-                    if( !isset($_POST[$key]) or $_POST[$key] === '') {
-                        $err =  "O campo $input é obrigatório!";
-                        header("location: login.php?err=$err");
-                        exit;
-                    }else{
-                        $input_values[$key] = $_POST[$key];
-                    }
-                }         
+                
+                $input_values = validate($acceptedInputs, 'login.php');    
         
                 $hashedPass = sha1($input_values['pass']);
 
@@ -96,24 +87,12 @@
 
                     </form>
                     
-                    <?php if(isset($_GET['err'])): ?>
-                        <div class="mt-4 alert-danger alert-dismissible alert fade show" role="alert">
-                            <?=$_GET['err']?>
-                        </div>
-                    <?php endif ?>
+                    <?php //HANDLER 
+                        require_once 'includes/handler.php';
+                        err(3000);
+                        success('painel.php');
+                    ?>
 
-                    <?php if(isset($_GET['success'])): ?>
-
-                        <div class="mt-4 alert-success alert-dismissible alert fade show" role="alert">
-                            <?= urldecode( $_GET['success']); ?>
-                        </div>
-
-                       <script type="text/javascript">
-                            setTimeout(() =>{
-                                window.location = 'painel.php';
-                            }, 3000)
-                        </script>
-                    <?php endif ?>
                     <br>
                     <a href="cadastro.php">Novo por aqui? Cadastre se aqui!</a>
                     <br> <br>   
@@ -125,17 +104,6 @@
         ?>
 
         <script>
-            function hide(elements){
-                elements.forEach( element =>{
-                    element.setAttribute('hidden','')
-                } )
-            }
-            function show(elements){
-                elements.forEach(element =>{
-                    element.removeAttribute('hidden')
-                })
-            }
-
             const rmLb = document.getElementById('rm_lb')
             const rmInput = document.getElementById('rm_input')
 

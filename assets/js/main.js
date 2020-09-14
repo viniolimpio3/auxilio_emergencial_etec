@@ -10,3 +10,27 @@ function onlyNumber(event){
         if(theEvent.preventDefault) theEvent.preventDefault()
     }
 }
+
+function hide(elements){
+
+    Object.values(elements).forEach( element =>{
+        element.setAttribute('hidden','')
+    } )
+}
+function show(elements){
+    
+    Object.values(elements).forEach(element =>{
+        element.removeAttribute('hidden')
+    })
+}
+
+function setReadOnlyInputs(inputs){
+    Object.values(inputs).forEach(field =>{
+        field.setAttribute('readonly','')
+    })
+}
+function unsetReadOnlyInputs(inputs){
+    Object.values(inputs).forEach(field =>{
+        field.removeAttribute('readonly')
+    })
+}

@@ -29,18 +29,6 @@ create table if not exists aux_em(
     primary key(id)
 );
 
--- create table if not exists user_docs(
--- 	id int auto_increment unique,
---     user_id int unique not null,
---     foreign key(user_id) references user ( id ),
-    
---     rg varchar(15) not null,
---     uf_rg char(2) not null,
---     cep varchar(9) not null,
---     cpf varchar(15) not null unique,
---     link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg'
--- );
-
 create table if not exists user_questions(
 	id int auto_increment unique,
     primary key( id ),
@@ -52,9 +40,8 @@ create table if not exists user_questions(
     uf_rg char(2) not null,
     cep varchar(9) not null,
     cpf varchar(15) not null unique,
-    link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg'
+    link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg',
 
-    
     internet boolean not null,
     isp_name varchar(20) comment 'internet service provider name',
     isp_configs longtext comment 'internet config',
@@ -73,6 +60,16 @@ create table if not exists user_questions(
     renda_ind decimal(6,2) not null,
     
     reason longtext not null comment 'reason of solicitation'
+);
+
+create database if not exists bank_info(
+    id auto_increment unique,
+    primary key(id),
+    
+     user_id int unique not null,
+    foreign key(user_id) references user ( id ),
+    
+    
 );
 
 insert into user(name, email, city, state, school, senha, rm)

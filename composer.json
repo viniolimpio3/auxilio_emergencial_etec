@@ -2,9 +2,12 @@
     "name": "vendor/aux",
     "description": "Projeto Auxílio Emergencial para alunos do ensino técnico",
     "require": {
-        "geekcom/phpjasper": "^3.3"
+        "mpdf/mpdf": "^8.0"
     },
     "autoload": {
         "classmap": ["Models/"]
+    },
+    "scripts": {
+        "load":"composer dump-autoload"
     }
 }
