@@ -30,15 +30,12 @@
 
     <body>
         <?php
+            require_once __DIR__  . '/vendor/autoload.php';
 
             if(!isset($_SESSION)) session_start();
             if(!require 'isAuthorized.php') header('location:login.php');
 
             $user = $_SESSION['user'];
-            if(!require './Models/Auxilio.php') require './Models/Auxilio.php';
-            if(!require './Models/Questions.php') require './Models/Questions.php';
-            if(!require './Models/User.php') require './Models/User.php';
-
 
             use Model\Auxilio;
             $aux = new Auxilio();

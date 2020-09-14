@@ -1,0 +1,10 @@
+{
+    "name": "vendor/aux",
+    "description": "Projeto Auxílio Emergencial para alunos do ensino técnico",
+    "require": {
+        "geekcom/phpjasper": "^3.3"
+    },
+    "autoload": {
+        "classmap": ["Models/"]
+    }
+}

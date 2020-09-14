@@ -27,8 +27,7 @@
         <?php
             $base_url = $_SERVER['SERVER_NAME'];
             if(!isset($_SESSION)) session_start();
-            if(!require './Models/User.php') require './Models/User.php';
-            if(!require './Models/Mailer.php') require './Models/Mailer.php';
+            require_once __DIR__  . '/vendor/autoload.php';
             
             use Model\User;
             $u = new User();

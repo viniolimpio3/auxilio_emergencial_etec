@@ -22,7 +22,8 @@
     <script src="assets/js/main.js"></script>
     <body>
         <?php
-            // if(require './isAuthorized.php') header('location: painel.php');
+
+            require_once __DIR__  . '/vendor/autoload.php';
             function dd($v, $exit=false){
                 echo '<pre>';
                 print_r($v);
@@ -30,8 +31,8 @@
                 if($exit) exit();
             }
             if(!isset($_SESSION)) session_start();
+
     
-            if(!require './Models/User.php') require './Models/User.php';
             use Model\User;
     
             $input_values = array();

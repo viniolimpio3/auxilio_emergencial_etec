@@ -22,9 +22,9 @@
     <script src="assets/js/main.js"></script>
     <body>
         <?php
+            require_once __DIR__  . '/vendor/autoload.php';
+
             if(!isset($_SESSION)) session_start();
-            
-            if(!require './Models/User.php') require './Models/User.php';
 
             use Model\User;
             
