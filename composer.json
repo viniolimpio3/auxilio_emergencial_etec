@@ -1,0 +1,19 @@
+{
+    "name": "vendor/aux",
+    "description": "Projeto Auxílio Emergencial para alunos do ensino técnico",
+    "require": {
+        "mpdf/mpdf": "^8.0"
+    },
+    "autoload": {
+        "classmap": ["Models/"],
+        "files": [
+            "./includes/data_validation.php",
+            "./includes/handler.php",
+            "./includes/data_validation.php",
+            "./includes/helpers.php"
+        ]
+    },
+    "scripts": {
+        "load":"composer dump-autoload"
+    }
+}

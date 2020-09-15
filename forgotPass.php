@@ -10,25 +10,17 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
+        <script src="assets/js/main.js?v=1"></script>
+
     </head>
-    <script>    
-        //RETIRAR QUERIES da url QUANDO DER UM REFRESH
-        // if(typeof window.history.pushState == 'function') {
-        //     window.history.pushState({}, "Hide", '<?php echo $_SERVER['PHP_SELF'];?>');
-        // }
-
-    </script>
-
     <?php         
     ?>
 
-    <script src="assets/js/main.js"></script>
     <body>
         <?php
             $base_url = $_SERVER['SERVER_NAME'];
             if(!isset($_SESSION)) session_start();
-            if(!require './Models/User.php') require './Models/User.php';
-            if(!require './Models/Mailer.php') require './Models/Mailer.php';
+            require_once __DIR__  . '/vendor/autoload.php';
             
             use Model\User;
             $u = new User();
@@ -199,7 +191,7 @@
             }else if(!isset($_REQUEST['h'])){
         ?>
             <div class="container mt-5">
-                <h3>Esqueceu Senha <small>Alunos do Ensino médio</small></h3>
+                <?php require_once 'includes/basic_header.php'; ?>
                 <div class="jumbotron">
                     <form action="forgotPass.php?send=ok" method="POST" >
 
@@ -210,24 +202,17 @@
 
                     </form>
                     
-                    
                     <a href="login.php">Possui uma conta? Entre com seu RM!</a>                    
                 </div>
             </div>
             <?php }//fim else!!
         ?>
         <div class="container">
-            <?php if(isset($_GET['err'])): ?>
-                <div class="mt-4 alert-danger alert fade show" role="alert">
-                    <?=$_GET['err']?>
-                </div>
-            <?php endif ?>
-
-            <?php if(isset($_GET['success'])): ?>
-                <div class="mt-4 alert-success alert fade show" role="alert">
-                    <?= urldecode( $_GET['success']); ?>
-                </div>
-            <?php endif ?>
+            <?php 
+                require_once 'includes/handler.php';
+                err(4000);
+                success();
+            ?>
         </div>
     </body>
 </html>

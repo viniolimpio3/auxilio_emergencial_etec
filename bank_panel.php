@@ -25,7 +25,7 @@
         }
 
     </style>
-    <script src="assets/js/main.js?v=1"></script>
+        <script src="assets/js/main.js?v=1"></script>
 
 
     <body>
@@ -34,22 +34,24 @@
 
             if(!isset($_SESSION)) session_start();
             if(!require 'isAuthorized.php') header('location:login.php');
-            $user = $_SESSION['user'];
+
+            $user = isset($_SESSION['user']) ? $_SESSION['user'] : header('location:login.php?err=Erro') ;
             
+
             use Model\Auxilio;
             $aux = new Auxilio();
-            
+
             use Model\Questions;
             $q_model = new Questions();
-            
+
             use Model\User;
             $u = new User();
-            
+
             if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
-            
+
             $cadastrado = $aux->exists($user->id);
-            
-            if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
+
+            if(isset($_REQUEST['data-confirm']) and $_REQUEST['data-confirm'] === 'y' ){
                 
                 $obrigatorios = array(
                     'rg' => 'RG',
@@ -65,8 +67,17 @@
                     'internet' => 'Internet',
                     'reason' => 'Motivo'
                 );
+                
 
-               $input_values = validate($obrigatorios, 'painel.php');
+                foreach($obrigatorios as $key => $input){
+                    if( !isset($_POST[$key]) or $_POST[$key] === '') {
+                        $err =  "O campo $input é obrigatório!";
+                        header("location: painel.php?err=$err");
+                        exit;
+                    }else{
+                        $input_values[$key] = $_POST[$key];
+                    }
+                }      
 
                 //campos opcionais
                 $input_values['isp_configs'] = isset($_POST['isp_configs']) ? $_POST['isp_configs'] : '' ;
@@ -97,100 +108,45 @@
                 $s = urlencode("Parabéns {$user->name}, vc está cadastrado no auxílio emergencial. Aguarde para mais informações");
                 header("location: painel.php?success=$s");
 
-
-
             }else{?>  
                 <div class="container mt-5">
                     <?php require_once 'includes/basic_header.php'; ?>
                     <div class="jumbotron">
-
-                            <?php if(!$cadastrado):?>
-                                <h2>Boa <?= $user->name?>! </h2>
-                                <p>Responda as questões abaixo para concluir sua inscrição</p>
-                                <form id="form" action="painel.php?cadastrar=s" method="POST" >
-
-                                    <?php require_once 'includes/questions_form.php' ?>
-
-                                    <button class="mt-5 btn btn-primary">Enviar</button>
-                                </form> 
-
-                            <?php else: ?>
-                                <div class="alert alert-success">
-                                    Parabéns <?= $user->name ?>, você está cadastrado no auxílio emergencial! 
-                                </div>
-
-                                <h2>Confirme seus dados para prosseguirmos!</h2>
-                                <form action="painel.php?update=yes" method="POST" >
-
-                                    <p>Email:</p>
-                                    <input class="form-control" readonly value="<?= $user->email ?>" type="email">  <br>
-
-                                    <p>Nome:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->name ?>" type="text">  <br>
-
-                                    <p>Cidade:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->city ?>" type="text">  <br>
-
-                                    <p>Estado:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->state ?>" type="text">  <br>
-
-                                    <p>Escola:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->school ?>" type="text">  <br>
-
-                                    <p>RM:</p>
-                                    <input  maxlength="6" onkeypress="return onlyNumber()" class="form-control inputs" readonly value="<?= $user->rm ?>" type="text">  <br>
-
-                                    <a href="bank_panel.php" class="btn btn-success">Confirmar</a>
-
-                                    
-                                    <br>
-                                    <button class="btn btn-dark mt-3" hidden type="submit" id="submit">Enviar</button>
-                                    <br>
-                                    <button class="btn btn-danger mt-3" hidden type="button" id="cancel">Cancelar</button>
-                                    <br>
-                                    <div hidden id="temp" class="alert alert-danger">
-                                        Ainda não desenvolvemos essa função :/
-                                    </div>
-
-                                    <button class="btn btn-dark mr-3" type="button" id="alterar">Alterar</button>
-                                    
-                                </form>
-                            <?php endif; ?>
-
-                            <?php 
-                                err(10000);
-                                success('painel.php');
-                            ?>
-
+                        <?php 
+                            $usuario = $u->get(['id' => $user->id]);
+                            $diffTime = $u->getTimestampDiff($usuario->vf_code_created_at);
+                        ?>
                     </div>
                 </div>
-            <?php }//fim else - $_request!!
 
-           
+            <?php }//fim else - $_request!!
             ?>
 
     </body>
-    <?php if($cadastrado): ?>
-        <script type="text/javascript">
-            const btnAlterar = id('alterar')
-            const submitButton = id('submit')
-            const btnCancelar = id('cancel')
+<!-- 
+    <script type="text/javascript">
+        const btnAlterar = document.querySelector('#alterar')
+        const submitButton = document.querySelector('#submit')
+        const btnCancelar = document.querySelector('#cancel')
 
-            const inputs = document.getElementsByClassName('inputs')
+        const inputs = document.getElementsByClassName('inputs')
 
-            btnAlterar.onclick = function(){
-                show([submitButton, btnCancelar, id('temp')])
-                hide([btnAlterar])
-                
-                unsetReadOnlyInputs(inputs)
-                
-            }
-            btnCancelar.onclick = function(){           
-                show([btnAlterar])
-                hide([btnCancelar, submitButton, id('temp')])
-                
-                setReadOnlyInputs(inputs)
-            }
-        </script>
-    <?php endif ?>
+        btnAlterar.onclick = function(){
+            submitButton.style.display = 'block'
+            btnCancelar.style.display = 'block'
+            btnAlterar.style.display = 'none'
+            
+            unsetReadOnlyInputs(inputs)
+            document.querySelector('#temp').style.display = 'block'
+        }
+        btnCancelar.onclick = function(){
+            
+            btnAlterar.style.display = 'block'
+            btnCancelar.style.display = 'none'
+            submitButton.style.display = 'none'
+            
+            setReadOnlyInputs(inputs)
+            document.querySelector('#temp').style.display = 'none'
+        }
+    </script> -->
 </html>

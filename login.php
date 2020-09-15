@@ -19,41 +19,28 @@
 
     </script>
 
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/main.js?v=1"></script>
     <body>
         <?php
-            // if(require './isAuthorized.php') header('location: painel.php');
-            function dd($v, $exit=false){
-                echo '<pre>';
-                print_r($v);
-                echo '</pre>';
-                if($exit) exit();
-            }
+
+            require_once __DIR__  . '/vendor/autoload.php';
+
             if(!isset($_SESSION)) session_start();
+
     
-            if(!require './Models/User.php') require './Models/User.php';
             use Model\User;
     
             $input_values = array();
             
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'yes' ){
+                
                 $lType = $_POST['login_type'];
                 $acceptedInputs = array(
                     "{$lType}_input" => 'Login',
                     'pass' => 'Senha'
                 );
 
-
-                foreach($acceptedInputs as $key => $input){
-
-                    if( !isset($_POST[$key]) or $_POST[$key] === '') {
-                        $err =  "O campo $input é obrigatório!";
-                        header("location: login.php?err=$err");
-                        exit;
-                    }else{
-                        $input_values[$key] = $_POST[$key];
-                    }
-                }         
+                $input_values = validate($acceptedInputs, 'login.php');    
         
                 $hashedPass = sha1($input_values['pass']);
 
@@ -95,24 +82,11 @@
 
                     </form>
                     
-                    <?php if(isset($_GET['err'])): ?>
-                        <div class="mt-4 alert-danger alert-dismissible alert fade show" role="alert">
-                            <?=$_GET['err']?>
-                        </div>
-                    <?php endif ?>
+                    <?php //HANDLER 
+                        err(3000);
+                        success('painel.php');
+                    ?>
 
-                    <?php if(isset($_GET['success'])): ?>
-
-                        <div class="mt-4 alert-success alert-dismissible alert fade show" role="alert">
-                            <?= urldecode( $_GET['success']); ?>
-                        </div>
-
-                       <script type="text/javascript">
-                            setTimeout(() =>{
-                                window.location = 'painel.php';
-                            }, 3000)
-                        </script>
-                    <?php endif ?>
                     <br>
                     <a href="cadastro.php">Novo por aqui? Cadastre se aqui!</a>
                     <br> <br>   
@@ -124,40 +98,18 @@
         ?>
 
         <script>
-            function hide(elements){
-                elements.forEach( element =>{
-                    element.setAttribute('hidden','')
-                } )
-            }
-            function show(elements){
-                elements.forEach(element =>{
-                    element.removeAttribute('hidden')
-                })
-            }
-
-            const rmLb = document.getElementById('rm_lb')
-            const rmInput = document.getElementById('rm_input')
-
-            const emailLb = document.getElementById('email_lb')
-            const emailInput = document.getElementById('email_input')
-
-            const btnMail = document.getElementById('btn_email')
-            const btnRm = document.getElementById('btn_rm')
-
-            let inputType = document.getElementById('login_type')
-            
-
+            const inputType = id('login_type')
+            const btnMail = id('btn_email')
             btnMail.onclick = function(){
-                hide([rmLb, rmInput, btnMail])
-                show([emailLb, emailInput, btnRm])
+                hide([ id('rm_lb'), id('rm_input'),id('btn_email') ])
+                show([ id('email_lb'), id('email_input'), id('btn_rm') ])
 
                 inputType.value = 'email'
             }
-
+            const btnRm = id('btn_rm')
             btnRm.onclick = function(){
-                show([rmLb, rmInput, btnMail])
-                hide([emailLb, emailInput, btnRm])
-
+                show([id('rm_lb'), id('rm_input'), id('btn_email')])
+                hide([id('email_lb'),id('email_input'), id('btn_rm')])
                 inputType.value = 'rm'
             }
 

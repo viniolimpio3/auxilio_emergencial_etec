@@ -19,17 +19,16 @@
 
     </script>
 
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/main.js?v=1"></script>
+
     <body>
         <?php
+            require_once __DIR__  . '/vendor/autoload.php';
+
             if(!isset($_SESSION)) session_start();
-            
-            if(!require './Models/User.php') require './Models/User.php';
 
             use Model\User;
-            
-            $input_values = array();
-            
+                        
             $acceptedInputs = array(
                 'user_rm' => 'RM',
                 'user_name' => 'Nome',
@@ -42,16 +41,8 @@
 
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'ok' ){
 
-                foreach($acceptedInputs as $key => $input){
+                $input_values = validate($acceptedInputs, 'cadastro.php');
 
-                    if( !isset($_POST[$key]) or $_POST[$key] === '') {
-                        $err =  urlencode("O campo $input é obrigatório!");
-                        header("location: cadastro.php?err=$err");
-                        exit;
-                    }else{
-                        $input_values[$key] = $_POST[$key];
-                    }
-                }         
                 $hashedPass = sha1($input_values['pass']);
                 print_r($input_values);
                 $user = new User($input_values['user_name'], $input_values['user_mail'], $hashedPass, $input_values['user_city'], $input_values['user_state'], $input_values['user_school'],$input_values['user_rm']);                
@@ -95,30 +86,16 @@
                         <button type="submit" class="btn mt-3 btn-dark">Enviar</button>
                     </form>
                     
-                    <?php if(isset($_GET['err'])): ?>
-                        <div class="mt-4 alert-danger alert fade show" role="alert">
-                            <?=$_GET['err']?>
-                        </div>
-                    <?php endif ?>
-
-                    <?php if(isset($_GET['success'])): ?>
-
-                        <div class="mt-4 alert-success alert fade show" role="alert">
-                            <?= urldecode( $_GET['success']); ?>
-                        </div>
-
-                        <script type="text/javascript">
-                            setTimeout(() =>{
-                                window.location = 'login.php';
-                            }, 3000)
-                        </script>
-                    <?php endif ?>
+                    <?php 
+                        require_once 'includes/handler.php';
+                        err(4000);
+                        success('login.php');
+                    ?>
                     <br>
                     <a href="login.php">Possui uma conta? Faça o Login!</a>                    
                 </div>
             </div>
         <?php }//fim else!!
         ?>
-
     </body>
 </html>
