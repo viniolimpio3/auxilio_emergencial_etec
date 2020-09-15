@@ -25,12 +25,6 @@
 
             require_once __DIR__  . '/vendor/autoload.php';
 
-            function dd($v, $exit=false){
-                echo '<pre>';
-                print_r($v);
-                echo '</pre>';
-                if($exit) exit();
-            }
             if(!isset($_SESSION)) session_start();
 
     

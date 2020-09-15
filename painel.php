@@ -34,20 +34,19 @@
 
             if(!isset($_SESSION)) session_start();
             if(!require 'isAuthorized.php') header('location:login.php');
-
             $user = $_SESSION['user'];
-
+            
             use Model\Auxilio;
             $aux = new Auxilio();
-
+            
             use Model\Questions;
             $q_model = new Questions();
-
+            
             use Model\User;
             $u = new User();
-
+            
             if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
-
+            
             $cadastrado = $aux->exists($user->id);
             
             if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){

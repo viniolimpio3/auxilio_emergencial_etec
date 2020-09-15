@@ -9,7 +9,8 @@
         "files": [
             "./includes/data_validation.php",
             "./includes/handler.php",
-            "./includes/data_validation.php"
+            "./includes/data_validation.php",
+            "./includes/helpers.php"
         ]
     },
     "scripts": {

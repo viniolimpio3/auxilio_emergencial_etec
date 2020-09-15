@@ -112,7 +112,10 @@
                 <div class="container mt-5">
                     <?php require_once 'includes/basic_header.php'; ?>
                     <div class="jumbotron">
-                        
+                        <?php 
+                            $usuario = $u->get(['id' => $user->id]);
+                            $diffTime = $u->getTimestampDiff($usuario->vf_code_created_at);
+                        ?>
                     </div>
                 </div>
 

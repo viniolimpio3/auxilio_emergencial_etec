@@ -26,7 +26,11 @@
                 'school',
                 'rm',
                 'senha',
-                'forgot_pass'
+                'forgot_pass',
+                'vf_code',
+                'vf_code_created_at',
+                'has_bank_account',
+                'answered_questions'
             );
         }
 
@@ -68,44 +72,15 @@
             try{
                 $query = "SELECT * from user WHERE 1 = 1 ";
 
-                if(isset($filtros['id'])) $query .= "AND id = '". $filtros['id'] ."' ";
-                if(isset($filtros['email'])) $query .= "AND email= '".$filtros['email']."' ";
-                if(isset($filtros['city'])) $query .= "AND city= '".$filtros['city']."' ";
-                if(isset($filtros['state'])) $query .= "AND state= '".$filtros['state']."' ";
-                if(isset($filtros['school'])) $query .= "AND school= '".$filtros['school']."' ";
-                if(isset($filtros['rm'])) $query .= "AND rm= '".$filtros['rm']."' ";
-
-                if(isset($filtros['url_hash'])) $query .= "AND url_hash= '".$filtros['url_hash']."' ";
-
+                foreach($this->userDefaultInputs as $field){
+                    if(isset($filtros[$field])) $query .= "AND $field = '$filtros[$field]' ";
+                }
 
                 $query .= "LIMIT 1";
 
                 $c = $connection->prepare($query);
                 if($c->execute() && $c->rowCount() > 0){
-
-                    while($row = $c->fetch(PDO::FETCH_OBJ)){
-                        $id = $row->id;
-                        $name = $row->name;
-                        $mail = $row->email;
-                        $city = $row->city;
-                        $state = $row->state;
-                        $school = $row->school;
-                        $rm = $row->rm;
-                        $forgetPass = $row->forgot_pass;
-
-                        
-                        return (Object) array(
-                            'id' => $id,
-                            'name' => $name,
-                            'email'=> $mail,
-                            'city' => $city,
-                            'state' => $state,
-                            'school' => $school,
-                            'rm' => $rm,
-                            'forgot_pass' => $forgetPass
-                        );
-                    }
-
+                    while($row = $c->fetch(PDO::FETCH_OBJ)) return (Object) $row;
                 }else{
                     
                     // throw new PDOException('Não foi possível Buscar um usuário no banco de dados');
@@ -212,6 +187,18 @@
                 echo 'erro';
                 print_r($e);
                 throw new PDOException($e->getMessage());
+                return false;
+            }
+        }
+        public function getTimestampDiff($timeToCompare){
+            if(!require 'database/connection.php') require 'database/connection.php';
+
+            $now = nowMysqlFormat();
+            $q = "SELECT timestampdiff(SECOND, '$timeToCompare', '$now') as timediff";
+            $c = $connection->prepare($q);
+            if($c->execute() and $c->rowCount() > 0){
+                while($row = $c->fetch(PDO::FETCH_OBJ)) return $row->timediff;
+            }else{
                 return false;
             }
         }

@@ -5,7 +5,7 @@ drop table if exists aux_em;
 drop table if exists user;
 
 create table user(
-	id int auto_increment unique not null,
+	id bigint auto_increment unique not null,
     name varchar(60) not null,
     email varchar(60) not null,
     city varchar(40) not null,
@@ -16,6 +16,11 @@ create table user(
     
     answered_questions boolean default false comment 'user_questions',
     
+    vf_code varchar(255) default 0,/*verify account code*/
+    vf_code_created_at datetime default now(),
+    
+    has_bank_account boolean default false,
+    
     forgot_pass boolean not null default false,
     url_hash varchar(255), /*sha1*/
     
@@ -23,17 +28,17 @@ create table user(
 );
 
 create table if not exists aux_em(
-	id int auto_increment unique,
-    user_id int unique not null,/*not null - indica relacionamento obrigatório!*/
+	id bigint auto_increment unique,
+    user_id bigint unique not null,/*not null - indica relacionamento obrigatório!*/
     foreign key(user_id) references user ( id ),
     primary key(id)
 );
 
 create table if not exists user_questions(
-	id int auto_increment unique,
+	id bigint auto_increment unique,
     primary key( id ),
     
-    user_id int unique not null,
+    user_id bigint unique not null,
     foreign key(user_id) references user ( id ),
 
     rg varchar(15) not null,
@@ -62,14 +67,16 @@ create table if not exists user_questions(
     reason longtext not null comment 'reason of solicitation'
 );
 
-create database if not exists bank_info(
-    id auto_increment unique,
+create table if not exists bank_info(
+    id bigint auto_increment unique,
     primary key(id),
     
-     user_id int unique not null,
-    foreign key(user_id) references user ( id ),
+	user_id bigint unique not null,
+	foreign key(user_id) references user ( id ),
     
-    
+    agencia int(8) not null,
+    cc float(15) not null,
+    bank_name varchar(60) not null
 );
 
 insert into user(name, email, city, state, school, senha, rm)
