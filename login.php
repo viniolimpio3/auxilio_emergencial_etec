@@ -27,8 +27,9 @@
 
             if(!isset($_SESSION)) session_start();
 
-    
             use Model\User;
+            use Model\Questions;
+            $q_model = new Questions();
     
             $input_values = array();
             
@@ -47,11 +48,12 @@
                 $user = new User();
                   
                 $u = $user->login($input_values["{$lType}_input"], $hashedPass, $lType);
-                
 
                 if($u){
+                    $_SESSION['user_photo'] = $q_model->getPhotoUrl($u->id);
                     $successMessage = urlencode("Parabéns " . $u->name . ", você logou com sucesso.\nAguarde para ser redirecionado!");
                     $_SESSION['auth'] = 'logado';
+
                     $_SESSION['user'] = $u;
                     header("location: login.php?success=$successMessage");
                 }else{

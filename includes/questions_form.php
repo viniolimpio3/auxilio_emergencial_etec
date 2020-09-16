@@ -5,25 +5,30 @@
     align-items: center !important;
 }
 </style>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
+<script>
+    window.onload = () => getUfs(id('ufs'))   
+</script>
 <h4>Primeiro, preencha seus documentos</h4>  
 <p style="color: red;">* Campo obrigatório</p>  
 <div class="row mt-4">
     <div class="col">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="RG*"  onkeypress="return onlyNumber()" name="rg" id="rg">
+            <input class="form-control" type="text" placeholder="RG*" onkeyup="mask('##.###.###-#', this, event)" onkeypress="return onlyNumber()" name="rg" id="rg">
         </div>
     </div>
 
     <div class="col">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="UF do RG*" maxlength="2" name="uf_rg" id="uf_rg">
+            <select class="form-control" name="uf_rg" id="ufs">
+                <option hidden value="0">UF do RG*</option>
+            </select>
         </div>
     </div>
 
     <div class="col">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="CPF*" onkeypress="return onlyNumber()" name="cpf" id="cpf">
+            <input class="form-control" type="text" placeholder="CPF*" onkeyup="mask('###.###.###-##', this, event)" onkeypress="return onlyNumber()" name="cpf" id="cpf">
         </div>
     </div>
 
@@ -33,7 +38,7 @@
 <div class="row">
     <div class="col">
         <div class="input-group">
-            <input class="form-control" type="text" maxlength="9" placeholder="CEP*" onkeypress="return onlyNumber()" name="cep" id="cep">
+            <input class="form-control" onkeyup="mask('##-######', this, event)" type="text" maxlength="9" placeholder="CEP*" onkeypress="return onlyNumber()" name="cep" id="cep">
         </div>
     </div>
 
@@ -170,14 +175,14 @@
     <div class="col">
         <label for="renda_per_capita">Qual a renda per capita de sua família?* <small>Soma das rendas individuas dividida pelo número de pessoas de sua casa</small></label>
         <div class="input-group">
-            <input class="form-control" onkeypress="return onlyNumber()" type="text" placeholder="Renda per capita*" name="renda_per_capita" id="renda_per_capita">
+            <input class="form-control" onkeypress="return onlyNumber()" onkeyup="mask('R$####,##',this,event)" type="text" placeholder="Renda per capita*" name="renda_per_capita" id="renda_per_capita">
         </div>
     </div>
 
     <div class="col">
         <label for="qtd_in_house">Quantas pessoas vivem atualmente em sua casa?*</label>
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="Nº Habitantes em sua casa*" name="qtd_in_house" id="qtd_in_house">
+            <input class="form-control" onkeypress="return onlyNumber()" type="text" placeholder="Nº Habitantes em sua casa*" name="qtd_in_house" id="qtd_in_house">
         </div>
     </div>
 
@@ -186,12 +191,12 @@
     <div class="col">
         <label for="renda_ind">Qual a sua renda individual?*</label>
         <div class="input-group">
-            <input class="form-control" onkeypress="return onlyNumber()" type="text" placeholder="Renda Individual*" name="renda_ind" id="renda_ind">
+            <input class="form-control" onkeypress="return onlyNumber()" onkeyup="mask('R$####,##',this,event)" type="text" placeholder="Renda Individual*" name="renda_ind" id="renda_ind">
         </div>
     </div>
 </div>
 
-<h4 class="mt-5">Motivo do pedido:</h4>
+<h4 class="mt-5">Motivo do pedido*:</h4>
 <p>Escreva um pouco abaixo, sobre o porquê você necessita do auxílio emergencial</p>
 <div class="row mt-4">
     <div class="col">
