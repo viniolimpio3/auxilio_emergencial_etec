@@ -23,35 +23,34 @@
             flex-direction: row;
             justify-content: space-around;
         }
-
     </style>
-        <script src="assets/js/main.js?v=1"></script>
+    <script src="assets/js/main.js?v=1"></script>
 
 
     <body>
         <?php
-            require_once __DIR__  . '/vendor/autoload.php';
+            require_once __DIR__  . '/vendor/autoload.php'; //autoload de classes e arquivos 
 
             if(!isset($_SESSION)) session_start();
             if(!require 'isAuthorized.php') header('location:login.php');
-
-            $user = isset($_SESSION['user']) ? $_SESSION['user'] : header('location:login.php?err=Erro') ;
+            $user = $_SESSION['user'];
             
-
             use Model\Auxilio;
             $aux = new Auxilio();
-
+            
             use Model\Questions;
             $q_model = new Questions();
-
+            
             use Model\User;
             $u = new User();
-
+            
             if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
 
             $cadastrado = $aux->exists($user->id);
 
-            if(isset($_REQUEST['data-confirm']) and $_REQUEST['data-confirm'] === 'y' ){
+           
+            
+            if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
                 
                 $obrigatorios = array(
                     'rg' => 'RG',
@@ -67,17 +66,8 @@
                     'internet' => 'Internet',
                     'reason' => 'Motivo'
                 );
-                
 
-                foreach($obrigatorios as $key => $input){
-                    if( !isset($_POST[$key]) or $_POST[$key] === '') {
-                        $err =  "O campo $input é obrigatório!";
-                        header("location: painel.php?err=$err");
-                        exit;
-                    }else{
-                        $input_values[$key] = $_POST[$key];
-                    }
-                }      
+               $input_values = validate($obrigatorios, 'painel.php');
 
                 //campos opcionais
                 $input_values['isp_configs'] = isset($_POST['isp_configs']) ? $_POST['isp_configs'] : '' ;
@@ -92,17 +82,11 @@
                     header("painel.php?err=$e");   
                 }
 
-                $inserted_aux = $aux->insert($user->id);
+                $updateuser = $u->update([ 'id' => $user->id ],[ 'answered_questions' => true ]);
 
-                if(!$inserted_aux){
-                    $e = urlencode('Ocorreu um erro! <br>Tente novamente mais tarde');
-                    header("painel.php?err=$e");   
-                }
-
-                $updateuser = $u->update(['id'=>$user->id],['answered_questions' =>true]);
-                if(!$inserted_aux){
-                    $e = urlencode('Ocorreu um erro! <br> Tente novamente mais tarde');
-                    header("painel.php?err=$e");   
+                if(!$updateuser){
+                    $e = urlencode('Ocorreram erros internos! <br> Tente novamente mais tarde');
+                    header("painel.php?err=$e");
                 }
                 
                 $s = urlencode("Parabéns {$user->name}, vc está cadastrado no auxílio emergencial. Aguarde para mais informações");
@@ -111,42 +95,34 @@
             }else{?>  
                 <div class="container mt-5">
                     <?php require_once 'includes/basic_header.php'; ?>
-                    <div class="jumbotron">
-                        <?php 
-                            $usuario = $u->get(['id' => $user->id]);
-                            $diffTime = $u->getTimestampDiff($usuario->vf_code_created_at);
-                        ?>
-                    </div>
+                    
                 </div>
-
             <?php }//fim else - $_request!!
+
+           
             ?>
 
     </body>
-<!-- 
-    <script type="text/javascript">
-        const btnAlterar = document.querySelector('#alterar')
-        const submitButton = document.querySelector('#submit')
-        const btnCancelar = document.querySelector('#cancel')
+    <?php if($cadastrado): ?>
+        <script type="text/javascript">
+            const btnAlterar = id('alterar')
+            const submitButton = id('submit')
+            const btnCancelar = id('cancel')
 
-        const inputs = document.getElementsByClassName('inputs')
+            const inputs = document.getElementsByClassName('inputs')
 
-        btnAlterar.onclick = function(){
-            submitButton.style.display = 'block'
-            btnCancelar.style.display = 'block'
-            btnAlterar.style.display = 'none'
-            
-            unsetReadOnlyInputs(inputs)
-            document.querySelector('#temp').style.display = 'block'
-        }
-        btnCancelar.onclick = function(){
-            
-            btnAlterar.style.display = 'block'
-            btnCancelar.style.display = 'none'
-            submitButton.style.display = 'none'
-            
-            setReadOnlyInputs(inputs)
-            document.querySelector('#temp').style.display = 'none'
-        }
-    </script> -->
+            btnAlterar.onclick = function(){
+                show([submitButton, btnCancelar, id('temp')])
+                hide([btnAlterar])
+                
+                unsetReadOnlyInputs(inputs)       
+            }
+            btnCancelar.onclick = function(){           
+                hide([btnCancelar, submitButton, id('temp')])
+                show([btnAlterar])
+                
+                setReadOnlyInputs(inputs)
+            }
+        </script>
+    <?php endif ?>
 </html>

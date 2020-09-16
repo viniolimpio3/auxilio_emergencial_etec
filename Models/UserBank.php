@@ -30,8 +30,7 @@ class User{
             'vf_code',
             'vf_code_created_at',
             'has_bank_account',
-            'answered_questions',
-            'link_photo'
+            'answered_questions'
         );
     }
 
@@ -80,13 +79,17 @@ class User{
             $query .= "LIMIT 1";
 
             $c = $connection->prepare($query);
-            if($c->execute() && $c->rowCount() > 0)
+            if($c->execute() && $c->rowCount() > 0){
                 while($row = $c->fetch(PDO::FETCH_OBJ)) return (Object) $row;
-            else
+            }else{
+                
+                // throw new PDOException('Não foi possível Buscar um usuário no banco de dados');
                 return false;
-            
+            }
 
         }catch(Exception $e){
+            echo 'deu erro';
+
             throw new PDOException($e->getMessage());
             return false;
         }
@@ -173,3 +176,7 @@ class User{
     }
 
 }
+
+
+
+?>

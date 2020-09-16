@@ -10,9 +10,50 @@ function onlyNumber(event){
         if(theEvent.preventDefault) theEvent.preventDefault()
     }
 }
+
 const id = element => document.getElementById(element)
 const e = element => document.querySelector(element)
 const log = (...data) => console.log(...data)
+
+function mask(m,t,e){
+    var cursor = t.selectionStart;
+    var texto = t.value;
+    let thisId
+	texto = texto.replace(/\D/g,'');
+	var l = texto.length;
+	var lm = m.length;
+	if(window.event) {                  
+	    thisId = e.keyCode;
+	} else if(e.which){                 
+	    thisId = e.which;
+	}
+	cursorfixo=false;
+	if(cursor < l)cursorfixo=true;
+	var livre = false;
+	if(thisId == 16 || thisId == 19 || (thisId >= 33 && thisId <= 40))livre = true;
+ 	ii=0;
+ 	mm=0;
+ 	if(!livre){
+	 	if(thisId!=8){
+		 	t.value="";
+		 	j=0;
+		 	for(i=0;i<lm;i++){
+		 		if(m.substr(i,1)=="#"){
+		 			t.value+=texto.substr(j,1);
+		 			j++;
+		 		}else if(m.substr(i,1)!="#"){
+		 			t.value+=m.substr(i,1);
+		 		}
+		 		if(thisId!=8 && !cursorfixo)cursor++;
+		 		if((j)==l+1)break;
+		 		
+		 	} 	
+	 	}
+	 	
+ 	}
+ 	if(cursorfixo && !livre)cursor--;
+ 	t.setSelectionRange(cursor, cursor);
+}
 
 function hide(elements){
 
@@ -35,5 +76,16 @@ function setReadOnlyInputs(inputs){
 function unsetReadOnlyInputs(inputs){
     Object.values(inputs).forEach(field =>{
         field.removeAttribute('readonly')
+    })
+}
+
+function getUfs(selectHtmlRef){
+    axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome').then( ({data:ufs}) =>{
+        ufs.forEach(uf =>{
+            const op = document.createElement('option')
+            op.setAttribute('value', uf.sigla)
+            op.append(uf.sigla)
+            selectHtmlRef.append(op)
+        })
     })
 }

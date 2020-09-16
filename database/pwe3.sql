@@ -14,16 +14,22 @@ create table user(
     senha text not null,/*hash - sha1*/
     rm char(6) not null unique, 
     
+    
     answered_questions boolean default false comment 'user_questions',
     
     vf_code varchar(255) default 0,/*verify account code*/
     vf_code_created_at datetime default now(),
     
+    
     has_bank_account boolean default false,
     
+    
+    is_verified_email boolean not null default false,
     forgot_pass boolean not null default false,
     url_hash varchar(255), /*sha1*/
     
+    created_at datetime default now(),
+    updated_at datetime,
     primary key(id)
 );
 
@@ -41,10 +47,10 @@ create table if not exists user_questions(
     user_id bigint unique not null,
     foreign key(user_id) references user ( id ),
 
-    rg varchar(15) not null,
+    rg varchar(16) not null,
     uf_rg char(2) not null,
-    cep varchar(9) not null,
-    cpf varchar(15) not null unique,
+    cep varchar(12) not null,
+    cpf varchar(20) not null unique,
     link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg',
 
     internet boolean not null,
@@ -59,10 +65,9 @@ create table if not exists user_questions(
     pc_notebook_configs longtext default false,
     sm_phone_configs longtext default false,
 
-    
     qtd_in_house int(2),
-    renda_per_capita decimal(6,2) not null,
-    renda_ind decimal(6,2) not null,
+    renda_per_capita varchar(10) not null,
+    renda_ind varchar(10) not null,
     
     reason longtext not null comment 'reason of solicitation'
 );
@@ -76,8 +81,11 @@ create table if not exists bank_info(
     
     agencia int(8) not null,
     cc float(15) not null,
-    bank_name varchar(60) not null
+    name varchar(60) not null
 );
+-- https://avatars0.githubusercontent.com/u/56204477?s=400&u=c28c1517802d462612ae345b0c992cbf4f825637&v=4
+insert into user(id, name, email, city, state, school, senha, rm, answered_questions)
+values(88,'admin', 'viniolimpio3@gmail.com','cidade', 'estado', 'escola', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', '000000', true);
 
-insert into user(name, email, city, state, school, senha, rm)
-values('admin', 'viniolimpio3@gmail.com','cidade', 'estado', 'escola', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', '000000');
+INSERT INTO user_questions( user_id, rg, uf_rg, cpf, cep, qt_pc_desktop, qt_pc_notebook, qt_sm_phone, renda_per_capita, qtd_in_house, renda_ind, internet, reason, isp_configs, pc_desktop_configs, pc_notebook_configs, sm_phone_configs, link_photo )
+values( 88,  '00.000.000-0',  'SP',  '000.111.222-31',  '09-340340',  '2',  '2',  '1',  'R$232',  '2',  'R$3232,22',  '1',  'MOTIVOS',  'fasdf',  'wesdfadf',  'adfasd dfa',  'fdadfadfa',  'https://avatars0.githubusercontent.com/u/56204477?s=400&u=c28c1517802d462612ae345b0c992cbf4f825637&v=4' );

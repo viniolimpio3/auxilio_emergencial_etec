@@ -28,9 +28,6 @@ class Auxilio{
             throw new PDOException($e->getMessage());
         }
     }
-    public function get($auxID){
-
-    }
 
     public function exists($userID){
         if(!require 'database/connection.php') require 'database/connection.php';

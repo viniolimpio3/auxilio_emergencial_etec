@@ -23,7 +23,6 @@
             flex-direction: row;
             justify-content: space-around;
         }
-
     </style>
     <script src="assets/js/main.js?v=1"></script>
 
@@ -46,8 +45,13 @@
             $u = new User();
             
             if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
-            
-            $cadastrado = $aux->exists($user->id);
+
+            $answered_questions = $user->answered_questions;
+            $linkPhoto = $_SESSION['user_photo'];
+
+            // if(isset($_REQUEST['update']) and $_REQUEST['update']=== 'yes'){
+            //     //
+            // }
             
             if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
                 
@@ -66,13 +70,14 @@
                     'reason' => 'Motivo'
                 );
 
-               $input_values = validate($obrigatorios, 'painel.php');
+                $input_values = validate($obrigatorios, 'painel.php');
 
                 //campos opcionais
                 $input_values['isp_configs'] = isset($_POST['isp_configs']) ? $_POST['isp_configs'] : '' ;
                 $input_values['pc_desktop_configs'] = isset($_POST['pc_desktop_configs']) ? $_POST['pc_desktop_configs'] : '' ;
                 $input_values['pc_notebook_configs'] = isset($_POST['pc_notebook_configs']) ? $_POST['pc_notebook_configs'] : '' ;
                 $input_values['sm_phone_configs'] = isset($_POST['sm_phone_configs']) ? $_POST['sm_phone_configs'] : '' ;
+                $input_values['link_photo'] = isset($_POST['link_photo']) ? $_POST['link_photo'] : '' ;
 
                 $inserted = $q_model->insert($input_values, $user->id);
                 
@@ -81,30 +86,22 @@
                     header("painel.php?err=$e");   
                 }
 
-                $inserted_aux = $aux->insert($user->id);
+                $updateuser = $u->update([ 'id' => $user->id ],[ 'answered_questions' => true ]);
 
-                if(!$inserted_aux){
-                    $e = urlencode('Ocorreu um erro! <br>Tente novamente mais tarde');
-                    header("painel.php?err=$e");   
-                }
-
-                $updateuser = $u->update(['id'=>$user->id],['answered_questions' =>true]);
-                if(!$inserted_aux){
-                    $e = urlencode('Ocorreu um erro! <br> Tente novamente mais tarde');
-                    header("painel.php?err=$e");   
+                if(!$updateuser){
+                    $e = urlencode('Ocorreram erros internos! <br> Tente novamente mais tarde');
+                    header("painel.php?err=$e");
                 }
                 
                 $s = urlencode("Parabéns {$user->name}, vc está cadastrado no auxílio emergencial. Aguarde para mais informações");
                 header("location: painel.php?success=$s");
-
-
 
             }else{?>  
                 <div class="container mt-5">
                     <?php require_once 'includes/basic_header.php'; ?>
                     <div class="jumbotron">
 
-                            <?php if(!$cadastrado):?>
+                            <?php if(!$answered_questions):?>
                                 <h2>Boa <?= $user->name?>! </h2>
                                 <p>Responda as questões abaixo para concluir sua inscrição</p>
                                 <form id="form" action="painel.php?cadastrar=s" method="POST" >
@@ -116,10 +113,18 @@
 
                             <?php else: ?>
                                 <div class="alert alert-success">
-                                    Parabéns <?= $user->name ?>, você está cadastrado no auxílio emergencial! 
+                                    <?= $user->name ?>, falta pouco para terminar o cadastro no auxílio emergencial! 
                                 </div>
 
                                 <h2>Confirme seus dados para prosseguirmos!</h2>
+
+
+                                <p>Imagem URL</p>
+                                <div class="profile_image">
+                                    <img src="<?=$linkPhoto?>" alt="image_<?=$user->name?>" title="profile_<?=$user->name?>">
+                                    <input readonly type="url" class="form-control" value="<?=$linkPhoto?>" name="link_photo">
+                                </div>
+
                                 <form action="painel.php?update=yes" method="POST" >
 
                                     <p>Email:</p>
@@ -170,7 +175,7 @@
             ?>
 
     </body>
-    <?php if($cadastrado): ?>
+    <?php if($answered_questions): ?>
         <script type="text/javascript">
             const btnAlterar = id('alterar')
             const submitButton = id('submit')
@@ -182,12 +187,11 @@
                 show([submitButton, btnCancelar, id('temp')])
                 hide([btnAlterar])
                 
-                unsetReadOnlyInputs(inputs)
-                
+                unsetReadOnlyInputs(inputs)       
             }
             btnCancelar.onclick = function(){           
-                show([btnAlterar])
                 hide([btnCancelar, submitButton, id('temp')])
+                show([btnAlterar])
                 
                 setReadOnlyInputs(inputs)
             }
