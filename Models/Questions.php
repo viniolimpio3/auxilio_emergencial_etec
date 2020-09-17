@@ -34,11 +34,12 @@ class Questions{
         try{
             
             $query = "INSERT INTO user_questions
-            ( user_id, rg, uf_rg, cpf, cep, qt_pc_desktop, qt_pc_notebook, qt_sm_phone, renda_per_capita, qtd_in_house, renda_ind, internet, reason, isp_configs, pc_desktop_configs, pc_notebook_configs, sm_phone_configs )
+            ( user_id, rg, uf_rg, cpf, cep, qt_pc_desktop, qt_pc_notebook, qt_sm_phone, renda_per_capita, qtd_in_house, renda_ind, internet, reason, city, isp_configs, pc_desktop_configs, pc_notebook_configs, sm_phone_configs )
             values( $user_id, ";
 
             foreach($data as $field => $value){
-                if(end($data) === $value){
+                end($data);//ponteiro para último índice o array!!
+                if(key($data) === $field){
                     $query .= " '$data[$field]' ";
                 }else{
                     $query .= " '$data[$field]', ";
@@ -46,12 +47,11 @@ class Questions{
             }
             $query .= " );";
 
-            dd($query, true);
+            // dd($query, true);
             $c = $connection->prepare($query);
 
             if($c->execute() && $c->rowCount() > 0){
-                $this->id = $connection->lastInsertId();
-                return $this->id;
+                return true;
             }else{
                 throw new PDOException('Não foi possível inserir um usuário no banco de dados');
                 return false;

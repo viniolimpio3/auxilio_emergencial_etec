@@ -50,16 +50,13 @@
                 $u = $user->login($input_values["{$lType}_input"], $hashedPass, $lType);
 
                 if($u){
-                    $_SESSION['user_photo'] = $q_model->getPhotoUrl($u->id);
-                    $successMessage = urlencode("Parabéns " . $u->name . ", você logou com sucesso.\nAguarde para ser redirecionado!");
+                    $successMessage = "Parabéns " . $u->name . ", você logou com sucesso.\nAguarde para ser redirecionado!";
                     $_SESSION['auth'] = 'logado';
-
                     $_SESSION['user'] = $u;
-                    header("location: login.php?success=$successMessage");
-                }else{
-                    $e = "RM ou Senha Incorreto(s)";
-                    header("location: login.php?err=$e");
-                }
+                    setMessage('success',$successMessage, 'login.php');
+
+                }else setMessage('err', 'RM ou Senha Incorreto(s)','login.php');
+                
             }else{
         ?>
             <div class="container mt-5">
