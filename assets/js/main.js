@@ -101,3 +101,24 @@ function getCities(uf, selectHtmlRef){
 		})
 	})
 }
+
+//MUDAR URL, CONFORME MÁQUINA INDIVIDUAL!!
+const urlToDataJSON = `http://localhost/etec/php_aulas/projeto_aux_em/assets/js/data/banks_in_brazil.json`;
+
+function getBankNames(selectHtmlRef){
+	axios.get(urlToDataJSON).then(({data:banks}) =>{
+		banks.forEach((bank, index) =>{
+			const op = document.createElement('option')
+			op.setAttribute('value', bank.label )
+			op.append(bank.label)
+			selectHtmlRef.append(op)
+		})
+	})
+}
+
+function getBankCode(bankName){
+	axios.get(urlToDataJSON).then( ({data:banks}) =>{
+		const b = banks.filter((bank, index) => bankName === bank.label)
+		return b[0].value
+	})
+}

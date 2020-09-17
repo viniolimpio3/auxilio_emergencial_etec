@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cadastro Auxílio Emergencial Estudantil</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -33,7 +34,7 @@
 
             if(!isset($_SESSION)) session_start();
             if(!require 'isAuthorized.php') header('location:login.php');
-            $user = $_SESSION['user'];
+            $user = updateUser();
             
             use Model\Auxilio;
             $aux = new Auxilio();
@@ -43,86 +44,132 @@
             
             use Model\User;
             $u = new User();
+
+
             
             if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
 
             $cadastrado = $aux->exists($user->id);
 
-           
+            $answered_bank_q = $user->answered_bank_q;
+
+            if(isset($_REQUEST['h']) and $_REQUEST['h'] === 'doesnt-have-bank'){//não possui conta bancária
+
+            }
             
-            if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
+            
+            if(isset($_REQUEST['h']) and $_REQUEST['h'] === '3fadfi2j3hra9sdufh2jhfk' ){//possui conta bancária
                 
-                $obrigatorios = array(
-                    'rg' => 'RG',
-                    'uf_rg' => 'UF do RG',
-                    'cpf' => 'CPF',
-                    'cep' =>'CEP',
-                    'qt_pc_desktop' => 'Quantidade de computadores Desktop',
-                    'qt_pc_notebook' => 'Quantidade de computadores notebook',
-                    'qt_sm_phone' => 'Quantidade de computadores notebook',
-                    'renda_per_capita' => 'Renda per capita',
-                    'qtd_in_house' => 'Quantidade de habitantes em casa',
-                    'renda_ind' => 'Renda Individual',
-                    'internet' => 'Internet',
-                    'reason' => 'Motivo'
-                );
 
-               $input_values = validate($obrigatorios, 'painel.php');
-
-                //campos opcionais
-                $input_values['isp_configs'] = isset($_POST['isp_configs']) ? $_POST['isp_configs'] : '' ;
-                $input_values['pc_desktop_configs'] = isset($_POST['pc_desktop_configs']) ? $_POST['pc_desktop_configs'] : '' ;
-                $input_values['pc_notebook_configs'] = isset($_POST['pc_notebook_configs']) ? $_POST['pc_notebook_configs'] : '' ;
-                $input_values['sm_phone_configs'] = isset($_POST['sm_phone_configs']) ? $_POST['sm_phone_configs'] : '' ;
-
-                $inserted = $q_model->insert($input_values, $user->id);
                 
-                if(!$inserted){
-                    $e = urlencode('Ocorreu um erro! <br>Preencha novamente o formulário, e reenvie');
-                    header("painel.php?err=$e");   
-                }
-
-                $updateuser = $u->update([ 'id' => $user->id ],[ 'answered_questions' => true ]);
-
-                if(!$updateuser){
-                    $e = urlencode('Ocorreram erros internos! <br> Tente novamente mais tarde');
-                    header("painel.php?err=$e");
-                }
-                
-                $s = urlencode("Parabéns {$user->name}, vc está cadastrado no auxílio emergencial. Aguarde para mais informações");
-                header("location: painel.php?success=$s");
 
             }else{?>  
                 <div class="container mt-5">
                     <?php require_once 'includes/basic_header.php'; ?>
-                    
+                    <div class="jumbotron">
+                        <?php 
+                            err();
+                            success('bank_panel.php');
+                        ?>
+                        <?php if ( !$answered_bank_q ):  ?>
+                            <h2>OK <?=$user->name?>, agora responda:</h2>
+                            <form action="bank_panel.php?h=3fadfi2j3hra9sdufh2jhfk" method="POST" >
+                                <div class="row">
+                                    <div class="col">
+                                        <h4>Você possui uma conta bancária? *</h4>
+                                        <div class="custom-control custom-radio">
+                                            <input checked type="radio" id="n" value="0" name="has_bank_account" class="custom-control-input">
+                                            <label class="custom-control-label" for="n">Não</label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="s" value="1" name="has_bank_account" class="custom-control-input">
+                                            <label class="custom-control-label" for="s">Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a id="if_not_have_bank_ac" href="bank_panel.php?h=doesnt-have-bank" class="btn btn-dark">Confirmar</a>
+
+
+                                <div hidden id="another_questions" >
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="bank_account">Conta:</label>
+                                            <input id="bank_account" name="bank_account" onkeypress="return onlyNumber()" maxlength="6" autocomplete="off" type="text" class="form-control">
+                                        </div>
+                                        <div class="col">
+                                            <label for="bank_name">Banco:</label>
+                                            <select class="form-control" name="bank_name" id="bankSelect">
+                                                <option hidden value="0">Banco*</option>
+                                            </select>
+                                            <input name="bank_code" id="bank_code" type="hidden">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
+                        <?php else: ?>
+                            <?php if ( $user->has_bank_account ):  ?>
+                                <!-- mostrar se o usuário cadastrou no auxílio emergencial -->
+                            <?php else: ?>
+                                <!-- user não possui conta bancária - mostrar pdf com seus dados para levar à um banco -->
+                            <?php endif ?>
+                        <?php endif ?>
+                    </div>
                 </div>
             <?php }//fim else - $_request!!
-
-           
             ?>
 
     </body>
-    <?php if($cadastrado): ?>
-        <script type="text/javascript">
-            const btnAlterar = id('alterar')
-            const submitButton = id('submit')
-            const btnCancelar = id('cancel')
 
-            const inputs = document.getElementsByClassName('inputs')
+    <script type="text/javascript">
 
-            btnAlterar.onclick = function(){
-                show([submitButton, btnCancelar, id('temp')])
-                hide([btnAlterar])
-                
-                unsetReadOnlyInputs(inputs)       
+        window.onload = async function(){
+            const bankSelect = id('bankSelect')
+            const bankCode = id('bank_code')
+            await getBankNames(id('bankSelect'))
+            const hasAccount = document.getElementsByName('has_bank_account')[1]
+            const notHaveAccount = document.getElementsByName('has_bank_account')[0]
+
+            hasAccount.onchange = function(){
+                if(hasAccount.checked){
+                    hide([id('if_not_have_bank_ac'),])
+                    show([id('another_questions'),])
+                }
             }
-            btnCancelar.onclick = function(){           
-                hide([btnCancelar, submitButton, id('temp')])
-                show([btnAlterar])
-                
-                setReadOnlyInputs(inputs)
+
+            notHaveAccount.onchange = function(){
+                if(notHaveAccount.checked) {
+                    show([ id('if_not_have_bank_ac'), ])
+                    hide([ id('another_questions'), ])
+                }
             }
-        </script>
-    <?php endif ?>
+
+            bankSelect.onchange = function(e){
+                const a = getBankCode(e.target.value)
+                bankCode.setAttribute('value', a)
+            }
+
+        }
+        
+        // const btnAlterar = id('alterar')
+        // const submitButton = id('submit')
+        // const btnCancelar = id('cancel')
+
+        // const inputs = document.getElementsByClassName('inputs')
+
+        // btnAlterar.onclick = function(){
+        //     show([submitButton, btnCancelar, id('temp')])
+        //     hide([btnAlterar])
+            
+        //     unsetReadOnlyInputs(inputs)       
+        // }
+        // btnCancelar.onclick = function(){           
+        //     hide([btnCancelar, submitButton, id('temp')])
+        //     show([btnAlterar])
+            
+        //     setReadOnlyInputs(inputs)
+        // }
+    </script>
+
 </html>
