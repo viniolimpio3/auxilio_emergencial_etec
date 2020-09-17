@@ -53,9 +53,23 @@
                 
             $answered_questions = $user->answered_questions;
             
-            // if(isset($_REQUEST['update']) and $_REQUEST['update']=== 'yes'){
-            //     
-            // }
+            if(isset($_REQUEST['update']) and $_REQUEST['update']=== 'yes'){
+                $acceptedInputs = array(
+                    'link_photo' => 'URL Imagem',
+                    'name' => 'Nome',
+                    'school' => 'Escola',
+                    'rm' => 'RM'
+                );
+
+                $input_values = validate($acceptedInputs, 'painel.php');
+                
+                $updated = $u->update(['id' => $user->id], $input_values);
+
+                if(!$updated) setMessage('err', 'Não foi possível atualizar sua informações<br>Tente novamente mais tarde.', 'painel.php');
+
+                setMessage('success',"Parabéns {$user->name}, seus dados foram atualizados!",'bank_panel.php', 10000);
+
+            }
             
             if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
                 
@@ -135,15 +149,15 @@
                                     </div><br>
 
                                     <p>Nome:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->name ?>" type="text">  <br>
+                                    <input class="form-control inputs" readonly value="<?= $user->name ?>" name="name" type="text">  <br>
 
                                     <p>Escola:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->school ?>" type="text">  <br>
+                                    <input class="form-control inputs" readonly value="<?= $user->school ?>" name="school" type="text">  <br>
 
                                     <p>RM:</p>
-                                    <input  maxlength="6" onkeypress="return onlyNumber()" class="form-control inputs" readonly value="<?= $user->rm ?>" type="text">  <br>
+                                    <input  maxlength="6" onkeypress="return onlyNumber()" class="form-control inputs" name="rm" readonly value="<?= $user->rm ?>" type="text">  <br>
 
-                                    <a href="bank_panel.php" class="btn btn-success">Confirmar</a>
+                                    <a href="bank_panel.php" id="conf" class="btn btn-success">Confirmar</a>
 
                                     <br>
                                     <button class="btn btn-dark mt-3" hidden type="submit" id="submit">Enviar</button>
@@ -175,17 +189,19 @@
             const submitButton = id('submit')
             const btnCancelar = id('cancel')
 
+            const btnConf = id('conf')
+
             const inputs = document.getElementsByClassName('inputs')
 
             btnAlterar.onclick = function(){
                 show([submitButton, btnCancelar, id('temp')])
-                hide([btnAlterar])
+                hide([btnAlterar, btnConf])
                 
                 unsetReadOnlyInputs(inputs)       
             }
             btnCancelar.onclick = function(){           
                 hide([btnCancelar, submitButton, id('temp')])
-                show([btnAlterar])
+                show([btnAlterar, btnConf])
                 
                 setReadOnlyInputs(inputs)
             }

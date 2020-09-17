@@ -1,7 +1,7 @@
 <?php 
 if(!function_exists('err')){
 
-    function err($messageTimeout=false){
+    function err($messageTimeout=4000){
         ?>
             <?php if(isset($_GET['err'])): ?>
                 <div id="e-message" class="mt-4 alert-danger alert fade show" role="alert">
@@ -20,7 +20,7 @@ if(!function_exists('err')){
     }
 }
 if(!function_exists('success')){
-    function success($location=false, $messageTimeout=false){
+    function success($location=false, $messageTimeout=4000){
         ?>
             <?php if(isset($_GET['success'])): ?>
                 <div class="mt-4 alert-success alert-dismissible alert fade show" role="alert">
@@ -31,7 +31,7 @@ if(!function_exists('success')){
                     <script type="text/javascript">
                         setTimeout(() =>{
                             window.location = "<?= $location ?>";
-                        }, <?= isset($messageTimeout) ? $messageTimeout : 4000 ?>)
+                        }, <?= $messageTimeout ?>)
                     </script>
                 <?php endif; ?>
 
