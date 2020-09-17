@@ -6,9 +6,21 @@
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
+
 <script>
-    window.onload = () => getUfs(id('ufs'))   
+    window.onload = () =>{ 
+        const ufSelect = id('ufs')
+        getUfs(ufSelect)
+        ufSelect.onchange = function(e){
+            getCities(e.target.value, id('cities'))
+        }
+    }
 </script>
+
+<?php 
+    
+?>
+
 <h4>Primeiro, preencha seus documentos</h4>  
 <p style="color: red;">* Campo obrigatório</p>  
 <div class="row mt-4">
@@ -28,10 +40,11 @@
 
     <div class="col">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="CPF*" onkeyup="mask('###.###.###-##', this, event)" onkeypress="return onlyNumber()" name="cpf" id="cpf">
+            <select class="form-control" name="city" id="cities">
+                <option hidden value="0">Cidade*</option>
+            </select>
         </div>
     </div>
-
 
 </div>
 <br>
@@ -39,6 +52,12 @@
     <div class="col">
         <div class="input-group">
             <input class="form-control" onkeyup="mask('##-######', this, event)" type="text" maxlength="9" placeholder="CEP*" onkeypress="return onlyNumber()" name="cep" id="cep">
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="CPF*" onkeyup="mask('###.###.###-##', this, event)" onkeypress="return onlyNumber()" name="cpf" id="cpf">
         </div>
     </div>
 
@@ -109,7 +128,6 @@
     </div>
 </div>
 
-
 <div class="row mt-5">
     <div class="col">
         <label>Quantos computadores notebook você possui em sua casa? *</label>
@@ -129,7 +147,6 @@
             <input type="radio" id="+3_not" value="+3" name="qt_pc_notebook" class="custom-control-input">
             <label class="custom-control-label" for="+3_not">3 ou mais</label>
         </div>
-
 
     </div>
     <div class="col">

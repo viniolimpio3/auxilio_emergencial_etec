@@ -84,8 +84,20 @@ function getUfs(selectHtmlRef){
         ufs.forEach(uf =>{
             const op = document.createElement('option')
             op.setAttribute('value', uf.sigla)
-            op.append(uf.sigla)
+			op.append(uf.sigla)
             selectHtmlRef.append(op)
         })
     })
+}
+
+function getCities(uf, selectHtmlRef){
+	selectHtmlRef.innerHTML = ''
+	axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`).then(({data:cities}) =>{
+		cities.forEach( city => {
+			const op = document.createElement('option')
+			op.setAttribute('value', city.nome)
+			op.append(city.nome)
+			selectHtmlRef.append(op)
+		})
+	})
 }

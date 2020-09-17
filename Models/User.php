@@ -7,13 +7,12 @@ use PDOException;
 
 class User{
 
-    function __construct($name="", $mail="", $pass="" ,$city="", $state="", $school="", $rm=""){
+    function __construct($name="", $mail="", $pass="" , $school="", $rm=""){
         $this->userName = $name;
         $this->userMail = $mail;
         $this->userPass = $pass;
-        $this->city = $city;
-        $this->state = $state;
         $this->school = $school;
+
         $this->rm = $rm;
         $this->id = 0;
 
@@ -38,11 +37,9 @@ class User{
     function insert(){
         if(!require 'database/connection.php') require 'database/connection.php';
         try{
-            $query = "INSERT INTO user ( name, email, city, state, school, rm, senha)values(
+            $query = "INSERT INTO user ( name, email, school, rm, senha)values(
                 '". $this->userName ."', 
                 '". $this->userMail ."', 
-                '". $this->city."', 
-                '". $this->state."',
                 '". $this->school ."', 
                 '". $this->rm ."',
                 '". $this->userPass ."'

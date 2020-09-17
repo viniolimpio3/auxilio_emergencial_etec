@@ -5,7 +5,7 @@ function validate($dataArray, $locationErr){
     foreach($dataArray as $key => $input){
         if( !isset($_POST[$key]) or $_POST[$key] === '') {
             $err =  "O campo $input é obrigatório!";
-            header("location: $locationErr?err=$err");
+            setMessage('err',$err, $locationErr);
             exit;
         }else{
             $input_values[$key] = $_POST[$key];

@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cadastro Auxílio Emergencial Estudantil</title>
 
+        <script src="assets/js/main.js?v=1"></script>
+
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
@@ -23,34 +25,36 @@
             flex-direction: row;
             justify-content: space-around;
         }
+        .profile_image img {
+            max-width: 20%;
+            margin-bottom: 15px;
+            border: 2px solid #222;
+        }
+
     </style>
-    <script src="assets/js/main.js?v=1"></script>
 
 
     <body>
         <?php
+            if(!require 'isAuthorized.php') logout();
             require_once __DIR__  . '/vendor/autoload.php';
-
-            if(!isset($_SESSION)) session_start();
-            if(!require 'isAuthorized.php') header('location:login.php');
-            $user = $_SESSION['user'];
+            use Model\User;
+            $u = new User();
             
+            if(!isset($_SESSION)) session_start();
+
+            $user = updateUser();
+
             use Model\Auxilio;
             $aux = new Auxilio();
             
             use Model\Questions;
             $q_model = new Questions();
-            
-            use Model\User;
-            $u = new User();
-            
-            if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
-
+                
             $answered_questions = $user->answered_questions;
-            $linkPhoto = $_SESSION['user_photo'];
-
+            
             // if(isset($_REQUEST['update']) and $_REQUEST['update']=== 'yes'){
-            //     //
+            //     
             // }
             
             if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
@@ -67,7 +71,8 @@
                     'qtd_in_house' => 'Quantidade de habitantes em casa',
                     'renda_ind' => 'Renda Individual',
                     'internet' => 'Internet',
-                    'reason' => 'Motivo'
+                    'reason' => 'Motivo',
+                    'city' => 'Cidade'
                 );
 
                 $input_values = validate($obrigatorios, 'painel.php');
@@ -77,23 +82,17 @@
                 $input_values['pc_desktop_configs'] = isset($_POST['pc_desktop_configs']) ? $_POST['pc_desktop_configs'] : '' ;
                 $input_values['pc_notebook_configs'] = isset($_POST['pc_notebook_configs']) ? $_POST['pc_notebook_configs'] : '' ;
                 $input_values['sm_phone_configs'] = isset($_POST['sm_phone_configs']) ? $_POST['sm_phone_configs'] : '' ;
-                $input_values['link_photo'] = isset($_POST['link_photo']) ? $_POST['link_photo'] : '' ;
 
                 $inserted = $q_model->insert($input_values, $user->id);
                 
-                if(!$inserted){
-                    $e = urlencode('Ocorreu um erro! <br>Preencha novamente o formulário, e reenvie');
-                    header("painel.php?err=$e");   
-                }
+                if(!$inserted) setMessage('err', 'Ocorreu um erro! <br>Preencha novamente o formulário, e reenvie', 'painel.php');          
 
                 $updateuser = $u->update([ 'id' => $user->id ],[ 'answered_questions' => true ]);
 
-                if(!$updateuser){
-                    $e = urlencode('Ocorreram erros internos! <br> Tente novamente mais tarde');
-                    header("painel.php?err=$e");
-                }
+                if(!$updateuser) setMessage('err', 'Ocorreram erros internos! <br> Tente novamente mais tarde','painel.php');
+                                 
                 
-                $s = urlencode("Parabéns {$user->name}, vc está cadastrado no auxílio emergencial. Aguarde para mais informações");
+                $s = "Parabéns {$user->name}, vc está cadastrado no auxílio emergencial. Aguarde para mais informações";
                 header("location: painel.php?success=$s");
 
             }else{?>  
@@ -101,6 +100,10 @@
                     <?php require_once 'includes/basic_header.php'; ?>
                     <div class="jumbotron">
 
+                            <?php 
+                                err(10000);
+                                success('painel.php');
+                            ?>
                             <?php if(!$answered_questions):?>
                                 <h2>Boa <?= $user->name?>! </h2>
                                 <p>Responda as questões abaixo para concluir sua inscrição</p>
@@ -118,26 +121,21 @@
 
                                 <h2>Confirme seus dados para prosseguirmos!</h2>
 
-
-                                <p>Imagem URL</p>
-                                <div class="profile_image">
-                                    <img src="<?=$linkPhoto?>" alt="image_<?=$user->name?>" title="profile_<?=$user->name?>">
-                                    <input readonly type="url" class="form-control" value="<?=$linkPhoto?>" name="link_photo">
-                                </div>
+                                
 
                                 <form action="painel.php?update=yes" method="POST" >
 
                                     <p>Email:</p>
                                     <input class="form-control" readonly value="<?= $user->email ?>" type="email">  <br>
 
+                                    <p>Imagem URL:</p>
+                                    <div class="profile_image">
+                                        <img src="<?=$user->link_photo?>" alt="image_<?=$user->name?>" title="profile_<?=$user->name?>">
+                                        <input class="inputs form-control" readonly type="url" class="form-control" value="<?=$user->link_photo?>" name="link_photo">
+                                    </div><br>
+
                                     <p>Nome:</p>
                                     <input class="form-control inputs" readonly value="<?= $user->name ?>" type="text">  <br>
-
-                                    <p>Cidade:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->city ?>" type="text">  <br>
-
-                                    <p>Estado:</p>
-                                    <input class="form-control inputs" readonly value="<?= $user->state ?>" type="text">  <br>
 
                                     <p>Escola:</p>
                                     <input class="form-control inputs" readonly value="<?= $user->school ?>" type="text">  <br>
@@ -147,7 +145,6 @@
 
                                     <a href="bank_panel.php" class="btn btn-success">Confirmar</a>
 
-                                    
                                     <br>
                                     <button class="btn btn-dark mt-3" hidden type="submit" id="submit">Enviar</button>
                                     <br>
@@ -162,10 +159,7 @@
                                 </form>
                             <?php endif; ?>
 
-                            <?php 
-                                err(10000);
-                                success('painel.php');
-                            ?>
+                            
 
                     </div>
                 </div>
@@ -196,5 +190,7 @@
                 setReadOnlyInputs(inputs)
             }
         </script>
+
+
     <?php endif ?>
 </html>

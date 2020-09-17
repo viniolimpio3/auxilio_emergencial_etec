@@ -33,8 +33,6 @@
                 'user_rm' => 'RM',
                 'user_name' => 'Nome',
                 'user_mail' => 'Email',
-                'user_city' => 'Cidade',
-                'user_state' => 'Estado',
                 'user_school' => 'Escola',
                 'pass' => 'Senha'
             );
@@ -45,7 +43,7 @@
 
                 $hashedPass = sha1($input_values['pass']);
                 print_r($input_values);
-                $user = new User($input_values['user_name'], $input_values['user_mail'], $hashedPass, $input_values['user_city'], $input_values['user_state'], $input_values['user_school'],$input_values['user_rm']);                
+                $user = new User($input_values['user_name'], $input_values['user_mail'], $hashedPass, $input_values['user_school'],$input_values['user_rm']);                
                 $u = $user->insert();
                 if($u){
                     $successMessage = urlencode("Parabéns " . $input_values['user_name'] . ", você foi cadastrado com sucesso.\nAguarde para ser redirecionado!");
@@ -70,12 +68,6 @@
 
                         <label for="user_mail">Email:</label>
                         <input autocomplete="off" type="text" name="user_mail" id="user_mail" class="form-control">
-
-                        <label for="user_city">Cidade:</label>
-                        <input autocomplete="off" type="text" name="user_city" id="user_city" class="form-control">
-
-                        <label for="user_state">Estado:</label>
-                        <input autocomplete="off" type="text" name="user_state" id="user_state" class="form-control">
 
                         <label for="user_school">Escola:</label>
                         <input autocomplete="off" type="text" name="user_school" id="user_school" class="form-control">
