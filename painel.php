@@ -36,8 +36,8 @@
 
     <body>
         <?php
-            if(!require 'isAuthorized.php') logout();
             require_once __DIR__  . '/vendor/autoload.php';
+            if(!require 'isAuthorized.php') logout();
             use Model\User;
             $u = new User();
             
@@ -52,6 +52,8 @@
             $q_model = new Questions();
                 
             $answered_questions = $user->answered_questions;
+
+            
             
             if(isset($_REQUEST['update']) and $_REQUEST['update']=== 'yes'){
                 $acceptedInputs = array(
@@ -114,10 +116,11 @@
                     <?php require_once 'includes/basic_header.php'; ?>
                     <div class="jumbotron">
 
-                            <?php 
-                                err(10000);
-                                success('painel.php');
-                            ?>
+                        <?php 
+                            err(10000);
+                            success('painel.php');
+                        ?>
+                        <?php if(!$aux->exists($user->id)): ?>
                             <?php if(!$answered_questions):?>
                                 <h2>Boa <?= $user->name?>! </h2>
                                 <p>Responda as questões abaixo para concluir sua inscrição</p>
@@ -127,8 +130,8 @@
 
                                     <button class="mt-5 btn btn-primary">Enviar</button>
                                 </form> 
-
-                            <?php else: ?>
+                            <?php endif ?>
+                            <?php if(!$user->answered_bank_q): ?>
                                 <div class="alert alert-success">
                                     <?= $user->name ?>, falta pouco para terminar o cadastro no auxílio emergencial! 
                                 </div>
@@ -164,17 +167,21 @@
                                     <br>
                                     <button class="btn btn-danger mt-3" hidden type="button" id="cancel">Cancelar</button>
                                     <br>
-                                    <div hidden id="temp" class="alert alert-danger">
-                                        Ainda não desenvolvemos essa função :/
-                                    </div>
-
                                     <button class="btn btn-dark mr-3" type="button" id="alterar">Alterar</button>
                                     
                                 </form>
-                            <?php endif; ?>
+                            <?php else: ?>
+                                <h3><?=$user->name?> seus dados estão em análise...</h3>
+                                <?php if ( !$user->has_bank_account ):  ?>
+                                    <a href="bank_panel.php?get_pdf=<?=$user->id?>">Baixar seus dados</a>
+                                <?php endif ?>
+                            <?php endif ?>
+                        <?php else: ?>
+                            <div class="alert alert-success">
+                                <h3>Parabéns <?=$user->name?>, você está cadastrado no auxílio emergencial!!</h3>
+                            </div>
 
-                            
-
+                        <?php endif ?>
                     </div>
                 </div>
             <?php }//fim else - $_request!!
@@ -194,13 +201,13 @@
             const inputs = document.getElementsByClassName('inputs')
 
             btnAlterar.onclick = function(){
-                show([submitButton, btnCancelar, id('temp')])
+                show([submitButton, btnCancelar, ])
                 hide([btnAlterar, btnConf])
                 
                 unsetReadOnlyInputs(inputs)       
             }
             btnCancelar.onclick = function(){           
-                hide([btnCancelar, submitButton, id('temp')])
+                hide([btnCancelar, submitButton, ])
                 show([btnAlterar, btnConf])
                 
                 setReadOnlyInputs(inputs)

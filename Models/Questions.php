@@ -62,6 +62,27 @@ class Questions{
             return false;
         }
     }
+
+    function get($userID){
+        if(!require 'database/connection.php') require 'database/connection.php';
+        try{
+            
+            $query = "SELECT * from user_questions where user_id=$userID";
+
+            $c = $connection->prepare($query);
+            if($c->execute() && $c->rowCount() > 0){
+                while($row = $c->fetch(PDO::FETCH_OBJ)) return $row;
+            
+            }else{
+                throw new PDOException('Não foi possível inserir um usuário no banco de dados');
+                return false;
+            }
+
+        }catch(Exception $e){
+            throw new Exception($e->getMessage());
+            return false;
+        }
+    }
 }
 
 

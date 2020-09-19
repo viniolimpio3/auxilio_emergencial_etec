@@ -46,7 +46,10 @@
             $u = new User();
 
 
-            
+            if(isset($_REQUEST['get_pdf']) and $_REQUEST['get_pdf'] === $user->id){
+                $s = generateBankPDF();
+                if(!$s) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+            }
             if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
 
             $cadastrado = $aux->exists($user->id);
@@ -54,7 +57,11 @@
             $answered_bank_q = $user->answered_bank_q;
 
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === 'doesnt-have-bank'){//não possui conta bancária
-
+                $gerouPDF = generateBankPDF();
+                if(!$gerouPDF) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+                dd($gerouPDF, true);
+                $u->update(['id' => $user->id],['answered_bank_q'=> true]);
+                setMessage('success', 'Agora baixe o arquivo em PDF, e leve-o até uma agência bancária, que autorize a criação de uma conta corrente!', 'bank_panel.php?');        
             }
             
             
@@ -113,6 +120,10 @@
                                 <!-- mostrar se o usuário cadastrou no auxílio emergencial -->
                             <?php else: ?>
                                 <!-- user não possui conta bancária - mostrar pdf com seus dados para levar à um banco -->
+                                <div class="alert alert-success">
+                                    Sua requisição já esta finalizada
+                                </div>
+                                <a href="bank_panel.php?get_pdf=<?=$user->id?>" class="btn btn-dark">Clique aqui para baixar seu PDF</a>
                             <?php endif ?>
                         <?php endif ?>
                     </div>
@@ -151,25 +162,6 @@
             }
 
         }
-        
-        // const btnAlterar = id('alterar')
-        // const submitButton = id('submit')
-        // const btnCancelar = id('cancel')
-
-        // const inputs = document.getElementsByClassName('inputs')
-
-        // btnAlterar.onclick = function(){
-        //     show([submitButton, btnCancelar, id('temp')])
-        //     hide([btnAlterar])
-            
-        //     unsetReadOnlyInputs(inputs)       
-        // }
-        // btnCancelar.onclick = function(){           
-        //     hide([btnCancelar, submitButton, id('temp')])
-        //     show([btnAlterar])
-            
-        //     setReadOnlyInputs(inputs)
-        // }
     </script>
 
 </html>
