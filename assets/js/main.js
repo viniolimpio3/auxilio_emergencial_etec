@@ -55,6 +55,19 @@ function mask(m,t,e){
  	t.setSelectionRange(cursor, cursor);
 }
 
+// function isImage(file){
+// 	const img = document.createElement('img')
+// 	img.src = file
+
+	
+// 	img.onload = function(a) {
+// 		return a.isTrusted
+// 	}
+// 	img.onerror = function(a){
+// 		return a.isTrusted
+// 	}	
+// }
+
 function hide(elements){
 
     Object.values(elements).forEach( element =>{

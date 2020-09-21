@@ -36,14 +36,16 @@
 
     <body>
         <?php
-            if(!require 'isAuthorized.php') logout();
             require_once __DIR__  . '/vendor/autoload.php';
+            if(!require 'isAuthorized.php') logout();
             use Model\User;
             $u = new User();
             
             if(!isset($_SESSION)) session_start();
 
             $user = updateUser();
+
+
 
             use Model\Auxilio;
             $aux = new Auxilio();
@@ -73,6 +75,8 @@
             
             if(isset($_REQUEST['cadastrar']) and $_REQUEST['cadastrar'] === 's' ){
                 
+                $q_model->issetUserID($user->id);
+
                 $obrigatorios = array(
                     'rg' => 'RG',
                     'uf_rg' => 'UF do RG',
@@ -98,8 +102,14 @@
                 $input_values['sm_phone_configs'] = isset($_POST['sm_phone_configs']) ? $_POST['sm_phone_configs'] : '' ;
 
                 $inserted = $q_model->insert($input_values, $user->id);
+
+                if(isset($_POST['link_photo'])) $u->update(['id' => $user->id], ['link_photo' => $_POST['link_photo']]);
                 
-                if(!$inserted) setMessage('err', 'Ocorreu um erro! <br>Preencha novamente o formulário, e reenvie', 'painel.php');          
+                if(!$inserted){
+                    $q_model->delete($user->id);
+                    $u->update(['id' => $user->id], ['answered_questions' => false]);
+                    setMessage('err', 'Ocorreu um erro! <br>Preencha novamente o formulário, e reenvie', 'painel.php');         
+                }
 
                 $updateuser = $u->update([ 'id' => $user->id ],[ 'answered_questions' => true ]);
 
@@ -114,10 +124,11 @@
                     <?php require_once 'includes/basic_header.php'; ?>
                     <div class="jumbotron">
 
-                            <?php 
-                                err(10000);
-                                success('painel.php');
-                            ?>
+                        <?php 
+                            err(10000);
+                            success('painel.php');
+                        ?>
+                        <?php if(!$aux->exists($user->id)): ?>
                             <?php if(!$answered_questions):?>
                                 <h2>Boa <?= $user->name?>! </h2>
                                 <p>Responda as questões abaixo para concluir sua inscrição</p>
@@ -127,24 +138,26 @@
 
                                     <button class="mt-5 btn btn-primary">Enviar</button>
                                 </form> 
-
-                            <?php else: ?>
+                            <?php endif ?>
+                            <?php if(!$user->answered_bank_q and $answered_questions): ?>
                                 <div class="alert alert-success">
                                     <?= $user->name ?>, falta pouco para terminar o cadastro no auxílio emergencial! 
                                 </div>
+                                
+                                <div id="helperDivImageLink" photo_link="<?= $user->link_photo ?>" hidden></div>
 
                                 <h2>Confirme seus dados para prosseguirmos!</h2>
 
-                                
-
+                            
                                 <form action="painel.php?update=yes" method="POST" >
 
                                     <p>Email:</p>
                                     <input class="form-control" readonly value="<?= $user->email ?>" type="email">  <br>
 
                                     <p>Imagem URL:</p>
-                                    <div class="profile_image">
-                                        <img src="<?=$user->link_photo?>" alt="image_<?=$user->name?>" title="profile_<?=$user->name?>">
+                                    <div id="errImgURL" class="alert alert-danger" hidden> A URL: <?=$user->link_photo?> não é válida! Insira um link válido </div>
+                                    <div class="profile_image" >
+                                        <img src="<?=$user->link_photo?>" alt="image_<?=$user->name?>" id="profile_image" title="profile_<?=$user->name?>">
                                         <input class="inputs form-control" readonly type="url" class="form-control" value="<?=$user->link_photo?>" name="link_photo">
                                     </div><br>
 
@@ -164,17 +177,23 @@
                                     <br>
                                     <button class="btn btn-danger mt-3" hidden type="button" id="cancel">Cancelar</button>
                                     <br>
-                                    <div hidden id="temp" class="alert alert-danger">
-                                        Ainda não desenvolvemos essa função :/
-                                    </div>
-
                                     <button class="btn btn-dark mr-3" type="button" id="alterar">Alterar</button>
                                     
                                 </form>
-                            <?php endif; ?>
+                            <?php else: ?>
+                                <?php if ( $user-> answered_bank_q ):  ?>
+                                    <h3><?=$user->name?> seus dados estão em análise...</h3>
+                                    <?php if ( !$user->has_bank_account ):  ?>
+                                        <a href="bank_panel.php?get_pdf=<?=$user->id?>">Baixar seus dados</a>
+                                    <?php endif ?>
+                                <?php endif ?> 
+                            <?php endif ?>
+                        <?php else: ?>
+                            <div class="alert alert-success">
+                                <h3>Parabéns <?=$user->name?>, você está cadastrado no auxílio emergencial!!</h3>
+                            </div>
 
-                            
-
+                        <?php endif ?>
                     </div>
                 </div>
             <?php }//fim else - $_request!!
@@ -194,17 +213,28 @@
             const inputs = document.getElementsByClassName('inputs')
 
             btnAlterar.onclick = function(){
-                show([submitButton, btnCancelar, id('temp')])
+                show([submitButton, btnCancelar, ])
                 hide([btnAlterar, btnConf])
                 
                 unsetReadOnlyInputs(inputs)       
             }
             btnCancelar.onclick = function(){           
-                hide([btnCancelar, submitButton, id('temp')])
+                hide([btnCancelar, submitButton, ])
                 show([btnAlterar, btnConf])
                 
                 setReadOnlyInputs(inputs)
             }
+
+            // window.onload = function(){
+            //     const divProfileImage = id('profile_image')
+            //     const imgURL = id('helperDivImageLink').getAttribute('photo_link')
+            //     const errDivURL = id('errImgURL')
+            //     console.log(imgURL)
+            //     if(!isImage(imgURL)){
+            //         hide([divProfileImage])
+            //         show([errDivURL])
+            //     }
+            // }
         </script>
 
 

@@ -46,7 +46,10 @@
             $u = new User();
 
 
-            
+            if(isset($_REQUEST['get_pdf']) and $_REQUEST['get_pdf'] === $user->id){
+                $s = generateBankPDF();
+                if(!$s) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+            }
             if(!isset($user) || !isset($user->id)) header("location: doLogout.php");
 
             $cadastrado = $aux->exists($user->id);
@@ -54,14 +57,34 @@
             $answered_bank_q = $user->answered_bank_q;
 
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === 'doesnt-have-bank'){//não possui conta bancária
-
+                $gerouPDF = generateBankPDF();
+                if(!$gerouPDF) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+                dd($gerouPDF, true);
+                $u->update(['id' => $user->id],['answered_bank_q'=> true, 'has_bank_account' => false]);
+                setMessage('success', 'Agora baixe o arquivo em PDF, e leve-o até uma agência bancária, que autorize a criação de uma conta corrente!', 'bank_panel.php?');        
             }
             
             
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === '3fadfi2j3hra9sdufh2jhfk' ){//possui conta bancária
                 
 
-                
+                $acceptedInputs = array(
+                    'bank_agency' => 'Agência Bancária',
+                    'bank_name' => 'Nome do Banco',
+                    'bank_account' => 'Conta Corrente Bancária'
+                );
+
+                $input_values = validate($acceptedInputs, 'bank_panel.php');
+
+                $updated = $q_model->update($user->id,$input_values);
+
+                if(!$updated) {
+                    $u->update(['id' => $user->id], ['answered_bank_q' => false]);
+                    setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+                }
+                $u->update(['id' => $user->id], ['answered_bank_q' => true, 'has_bank_account' => true]);
+
+                setMessage('success', "Boa {$user->name}! Seus dados agora estão sendo analisados!", 'painel.php');
 
             }else{?>  
                 <div class="container mt-5">
@@ -88,7 +111,7 @@
                                     </div>
                                 </div>
 
-                                <a id="if_not_have_bank_ac" href="bank_panel.php?h=doesnt-have-bank" class="btn btn-dark">Confirmar</a>
+                                <a id="if_not_have_bank_ac" href="bank_panel.php?h=doesnt-have-bank" class="mt-3 btn btn-dark">Confirmar</a>
 
 
                                 <div hidden id="another_questions" >
@@ -104,15 +127,29 @@
                                             </select>
                                             <input name="bank_code" id="bank_code" type="hidden">
                                         </div>
+                                        <div class="col">
+                                            <label for="bank_agency">Agência:</label>
+                                            <input id="bank_agency" name="bank_agency" onkeypress="return onlyNumber()" maxlength="6" autocomplete="off" type="text" class="form-control">
+                                        </div>
                                     </div>
-
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <button class="btn btn-dark" type="submit">Enviar</button>
+                                        </div>
+                                    </div>
                                 </div>
+
+
                             </form>
                         <?php else: ?>
                             <?php if ( $user->has_bank_account ):  ?>
                                 <!-- mostrar se o usuário cadastrou no auxílio emergencial -->
                             <?php else: ?>
                                 <!-- user não possui conta bancária - mostrar pdf com seus dados para levar à um banco -->
+                                <div class="alert alert-success">
+                                    Sua requisição já esta finalizada
+                                </div>
+                                <a href="bank_panel.php?get_pdf=<?=$user->id?>" class="btn btn-dark">Clique aqui para baixar seu PDF</a>
                             <?php endif ?>
                         <?php endif ?>
                     </div>
@@ -151,25 +188,6 @@
             }
 
         }
-        
-        // const btnAlterar = id('alterar')
-        // const submitButton = id('submit')
-        // const btnCancelar = id('cancel')
-
-        // const inputs = document.getElementsByClassName('inputs')
-
-        // btnAlterar.onclick = function(){
-        //     show([submitButton, btnCancelar, id('temp')])
-        //     hide([btnAlterar])
-            
-        //     unsetReadOnlyInputs(inputs)       
-        // }
-        // btnCancelar.onclick = function(){           
-        //     hide([btnCancelar, submitButton, id('temp')])
-        //     show([btnAlterar])
-            
-        //     setReadOnlyInputs(inputs)
-        // }
     </script>
 
 </html>

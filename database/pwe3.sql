@@ -75,9 +75,7 @@ create table if not exists user_questions(
     
     bank_agency int(8) not null default 0,
     bank_account float(15) not null default 0,
-    bank_name varchar(60) not null default 0,
-    bank_code varchar(4) not null default 0,
-    
+    bank_name varchar(60) not null default 0    
 );
 
 -- https://avatars0.githubusercontent.com/u/56204477?s=400&u=c28c1517802d462612ae345b0c992cbf4f825637&v=4

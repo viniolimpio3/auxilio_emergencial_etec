@@ -121,8 +121,10 @@ class User{
         try{
             $query = "UPDATE user SET ";
             
+
             foreach($data as $field => $value){
-                if(end($data) === $value){
+                end($data);
+                if(key($data) === $field){
                     $query .= "$field = '".$data[$field]."' ";
                 }else{
                     $query .= "$field = '".$data[$field]."', ";
