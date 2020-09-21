@@ -32,12 +32,13 @@ class User{
             'answered_questions',
             'link_photo'
         );
+        $this->table = 'user';
     }
 
     function insert(){
         if(!require 'database/connection.php') require 'database/connection.php';
         try{
-            $query = "INSERT INTO user ( name, email, school, rm, senha)values(
+            $query = "INSERT INTO {$this->table} ( name, email, school, rm, senha)values(
                 '". $this->userName ."', 
                 '". $this->userMail ."', 
                 '". $this->school ."', 
@@ -68,7 +69,7 @@ class User{
 
 
         try{
-            $query = "SELECT * from user WHERE 1 = 1 ";
+            $query = "SELECT * from {$this->table} WHERE 1 = 1 ";
 
             foreach($this->userDefaultInputs as $field){
                 if(isset($filtros[$field])) $query .= "AND $field = '$filtros[$field]' ";
@@ -95,7 +96,7 @@ class User{
         if(!isset($user_login) || !isset($pass)) return false;
         try{
 
-            $query = "SELECT * from user WHERE $loginType = '$user_login' AND senha = '$pass' LIMIT 1";
+            $query = "SELECT * from {$this->table} WHERE $loginType = '$user_login' AND senha = '$pass' LIMIT 1";
             $c = $connection->prepare($query);
             if($c->execute() && $c->rowCount() > 0){
 
@@ -104,7 +105,6 @@ class User{
             }else{
                 return false;
             }
-        
         }catch(Exception $e){
             echo 'deu erro';
 
@@ -112,14 +112,13 @@ class User{
             return false;
         }
     }    
-    public function update($filtros, $data){
-        
+    public function update($filtros, $data){   
         if(!is_array($filtros)) return false;
         if(!is_array($data)) return false;
 
         if(!require 'database/connection.php') require 'database/connection.php';
         try{
-            $query = "UPDATE user SET ";
+            $query = "UPDATE {$this->table} SET ";
             
 
             foreach($data as $field => $value){

@@ -34,7 +34,7 @@
 
             if(!isset($_SESSION)) session_start();
             if(!require 'isAuthorized.php') header('location:login.php');
-            $user = updateUser();
+            $user = getUpdatedUser();
             
             use Model\Auxilio;
             $aux = new Auxilio();

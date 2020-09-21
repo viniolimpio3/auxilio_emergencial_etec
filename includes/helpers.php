@@ -29,10 +29,10 @@ function logout(){
     header('location: doLogout.php');
 }
 
-if(!function_exists('updateUser')){
+if(!function_exists('getUpdatedUser')){
     if(!isset($_SESSION)) session_start();
 
-    function updateUser(){
+    function getUpdatedUser(){
         $u = new User();
         
         if(!isset($_SESSION['user']) or !isset($_SESSION['user']->id)) logout();
@@ -47,7 +47,7 @@ if(!function_exists('updateUser')){
 
 function generateBankPDF(){
     $q = new Questions();
-    $user = updateUser();
+    $user = getUpdatedUser();
     $userQ = $q->get($user->id);
     
 
