@@ -43,8 +43,7 @@
             
             if(!isset($_SESSION)) session_start();
 
-            $user = updateUser();
-
+            $user = getUpdatedUser();
 
 
             use Model\Auxilio;
