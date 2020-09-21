@@ -60,7 +60,7 @@
                 $gerouPDF = generateBankPDF();
                 if(!$gerouPDF) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
                 dd($gerouPDF, true);
-                $u->update(['id' => $user->id],['answered_bank_q'=> true]);
+                $u->update(['id' => $user->id],['answered_bank_q'=> true, 'has_bank_account' => false]);
                 setMessage('success', 'Agora baixe o arquivo em PDF, e leve-o até uma agência bancária, que autorize a criação de uma conta corrente!', 'bank_panel.php?');        
             }
             
@@ -82,7 +82,7 @@
                     $u->update(['id' => $user->id], ['answered_bank_q' => false]);
                     setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
                 }
-                $u->update(['id' => $user->id], ['answered_bank_q' => true]);
+                $u->update(['id' => $user->id], ['answered_bank_q' => true, 'has_bank_account' => true]);
 
                 setMessage('success', "Boa {$user->name}! Seus dados agora estão sendo analisados!", 'painel.php');
 

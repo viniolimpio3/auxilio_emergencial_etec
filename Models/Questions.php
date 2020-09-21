@@ -104,10 +104,11 @@ class Questions{
         try{
             $query = "UPDATE user_questions SET ";
             foreach($data as $field => $value){
-                if(end($data) === $value){
-                    $query .= "$field = '".$data[$field]."' ";
+                end($data);
+                if(key($data) === $field){
+                    $query .= " $field = '".$data[$field]."' ";
                 }else{
-                    $query .= "$field = '".$data[$field]."', ";
+                    $query .= " $field = '".$data[$field]."', ";
                 }
             }
             $query .= "WHERE user_id = $userID ";
