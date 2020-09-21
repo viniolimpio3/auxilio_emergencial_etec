@@ -68,7 +68,23 @@
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === '3fadfi2j3hra9sdufh2jhfk' ){//possui conta bancária
                 
 
-                
+                $acceptedInputs = array(
+                    'bank_agency' => 'Agência Bancária',
+                    'bank_name' => 'Nome do Banco',
+                    'bank_account' => 'Conta Corrente Bancária'
+                );
+
+                $input_values = validate($acceptedInputs, 'bank_panel.php');
+
+                $updated = $q_model->update($user->id,$input_values);
+
+                if(!$updated) {
+                    $u->update(['id' => $user->id], ['answered_bank_q' => false]);
+                    setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+                }
+                $u->update(['id' => $user->id], ['answered_bank_q' => true]);
+
+                setMessage('success', "Boa {$user->name}! Seus dados agora estão sendo analisados!", 'painel.php');
 
             }else{?>  
                 <div class="container mt-5">
@@ -95,7 +111,7 @@
                                     </div>
                                 </div>
 
-                                <a id="if_not_have_bank_ac" href="bank_panel.php?h=doesnt-have-bank" class="btn btn-dark">Confirmar</a>
+                                <a id="if_not_have_bank_ac" href="bank_panel.php?h=doesnt-have-bank" class="mt-3 btn btn-dark">Confirmar</a>
 
 
                                 <div hidden id="another_questions" >
@@ -111,9 +127,19 @@
                                             </select>
                                             <input name="bank_code" id="bank_code" type="hidden">
                                         </div>
+                                        <div class="col">
+                                            <label for="bank_agency">Agência:</label>
+                                            <input id="bank_agency" name="bank_agency" onkeypress="return onlyNumber()" maxlength="6" autocomplete="off" type="text" class="form-control">
+                                        </div>
                                     </div>
-
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <button class="btn btn-dark" type="submit">Enviar</button>
+                                        </div>
+                                    </div>
                                 </div>
+
+
                             </form>
                         <?php else: ?>
                             <?php if ( $user->has_bank_account ):  ?>

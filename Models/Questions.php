@@ -9,25 +9,6 @@ class Questions{
     function __construct(){
         
     }
-    public function getPhotoUrl($userID){
-        if(!require 'database/connection.php') require 'database/connection.php';
-        try{
-            $query = "SELECT * FROM user_questions WHERE user_id = '$userID'";
-
-            $c = $connection->prepare($query);
-
-            if($c->execute() && $c->rowCount() > 0){
-                while($row = $c->fetch(PDO::FETCH_OBJ)) return $row->link_photo;                
-            }else{
-                throw new PDOException('Não foi possível inserir um usuário no banco de dados');
-                return false;
-            }
-
-        }catch(Exception $e){
-            throw new Exception($e->getMessage());
-            return false;
-        }
-    }
 
     function insert($data, $user_id){
         if(!require 'database/connection.php') require 'database/connection.php';
@@ -77,6 +58,69 @@ class Questions{
                 throw new PDOException('Não foi possível inserir um usuário no banco de dados');
                 return false;
             }
+
+        }catch(Exception $e){
+            throw new Exception($e->getMessage());
+            return false;
+        }
+    }
+    function delete($userID){
+        if(!require 'database/connection.php') require 'database/connection.php';
+        try{
+            $query = "DELETE from user_questions where user_id=$userID";
+            $c = $connection->prepare($query);
+            if($c->execute() && $c->rowCount() > 0)
+                return true;
+            else
+                return false;
+
+
+        }catch(Exception $e){
+            throw new Exception($e->getMessage());
+            return false;
+        }
+    }
+
+    function issetUserID($uID){
+        if(!require 'database/connection.php') require 'database/connection.php';
+        try{
+            $query = "SELECT user_id from user_questions where user_id=$uID";
+            
+            $c = $connection->prepare($query);
+            if($c->execute() && $c->rowCount() > 0)
+                while($row = $c->fetch(PDO::FETCH_OBJ)) $this->delete($uID);
+            else
+                return false;
+
+
+        }catch(Exception $e){
+            throw new Exception($e->getMessage());
+            return false;
+        }
+    }
+
+    function update($userID, $data){
+        if(!require 'database/connection.php') require 'database/connection.php';
+        try{
+            $query = "UPDATE user_questions SET ";
+            foreach($data as $field => $value){
+                if(end($data) === $value){
+                    $query .= "$field = '".$data[$field]."' ";
+                }else{
+                    $query .= "$field = '".$data[$field]."', ";
+                }
+            }
+            $query .= "WHERE user_id = $userID ";
+
+            
+            $c = $connection->prepare($query);
+
+
+            if($c->execute() and $c->rowCount() > 0)
+                return true;
+            else
+                return false;
+            
 
         }catch(Exception $e){
             throw new Exception($e->getMessage());
