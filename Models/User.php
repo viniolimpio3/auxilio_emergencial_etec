@@ -139,15 +139,10 @@ class User{
                     if(isset($filtros[$field])) $query .= " AND $field='" . $filtros[$field] . "' ";
                 }
             }
-            print_r($query);
 
             $c = $connection->prepare($query);
 
-            if($c->execute() and $c->rowCount() > 0){
-                return true;
-            }else{
-                return false;
-            }
+            return $c->execute() and $c->rowCount() > 0 ? true : false;
 
         }catch(PDOException $e){
             echo 'erro';

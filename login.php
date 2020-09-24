@@ -26,7 +26,7 @@
             require_once __DIR__  . '/vendor/autoload.php';
 
             if(!isset($_SESSION)) session_start();
-
+            
             use Model\User;
             use Model\Questions;
             $q_model = new Questions();

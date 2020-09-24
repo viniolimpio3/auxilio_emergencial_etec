@@ -13,17 +13,26 @@
         <script src="assets/js/main.js?v=1"></script>
 
     </head>
-    <?php         
-    ?>
-
+    
     <body>
         <?php
-            $base_url = $_SERVER['SERVER_NAME'];
-            if(!isset($_SESSION)) session_start();
             require_once __DIR__  . '/vendor/autoload.php';
+            
+            ?>
+            <div class="container">
+                <?php 
+                    err(4000);
+                    success('forgotPass.php', 4000);
+                ?>
+            </div>
+            <?php 
+
+
+            if(!isset($_SESSION)) session_start();
             
             use Model\User;
             $u = new User();
+
 
             function validateHash($hash){
                 try{
@@ -38,6 +47,7 @@
                 }
             }
 
+
             //-------------------------------------------------------------------------------------------------------------
             //TROCA DE SENHA
             if(isset($_REQUEST['h']) and $_REQUEST['h'] !== '' and $_REQUEST['h'] !== null):
@@ -50,6 +60,7 @@
                     $e = urlencode('Erro. Tente novamente mais tarde');
                     header("location:forgotPass.php?err=$e");
                 }
+
                 if(isset($_REQUEST['cp']) and $_REQUEST['cp'] === 'ok' ){
                     $acceptedInputs = array(
                         'pass' => 'Senha',
@@ -71,12 +82,12 @@
                     $hashP = sha1($input_values['conf_pass']);
                          
                     $update = $u->update(['id' => $user->id],['senha'=>$hashP]);
-
+                    
                     if($update){
-                        $s = urlencode("{$user->name}, você atualizou sua senha com sucesso. Você será redirecionado para o login.");
-                        header("location: forgotPass.php?h=$hash&success-l=$s");
+                        $s = urlencode("{$user->name}, você atualizou sua senha com sucesso. Volte para o login.");
+                        header("location: forgotPass.php?h=$hash&success=$s");
                     }else{
-                        $e = "Não foi possível atualizar sua senha. Tente novamente";
+                        $e = urlencode("Não foi possível atualizar sua senha. Tente novamente");
                         header("location: forgotPass.php?h=$hash&err=$e");
                     }
                 }else{
@@ -99,17 +110,6 @@
                             
                             <a href="login.php">Possui uma conta? Entre com seu RM!</a>   
                             
-                            <?php if(isset($_GET['success-l'])): ?>
-                                <div class="mt-4 alert-success alert fade show" role="alert">
-                                    <?= urldecode( $_GET['success-l']); ?>
-                                </div>
-
-                                <script type="text/javascript">
-                                    setTimeout(() =>{
-                                        window.location = 'login.php';
-                                    }, 3000)
-                                </script>
-                            <?php endif ?>
                         </div>
                     </div>
                 <?php
@@ -188,11 +188,12 @@
                 }
                 
                 // }
-            }else if(!isset($_REQUEST['h'])){
+            }else if(!isset($_REQUEST['send']) and !isset($_REQUEST['h']) ){
+
         ?>
             <div class="container mt-5">
-                <?php require_once 'includes/basic_header.php'; ?>
                 <div class="jumbotron">
+                    <h2>Digite seu email</h2>
                     <form action="forgotPass.php?send=ok" method="POST" >
 
                         <label for="user_mail">Email:</label>
@@ -205,14 +206,10 @@
                     <a href="login.php">Possui uma conta? Entre com seu RM!</a>                    
                 </div>
             </div>
-            <?php }//fim else!!
-        ?>
-        <div class="container">
             <?php 
-                require_once 'includes/handler.php';
-                err(4000);
-                success();
-            ?>
-        </div>
+            }//fim else!!
+
+        ?>
+        
     </body>
 </html>
