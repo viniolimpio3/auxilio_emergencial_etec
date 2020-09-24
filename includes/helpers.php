@@ -44,6 +44,10 @@ if(!function_exists('getUpdatedUser')){
         return $user;
     }
 }
+function l($v, $ex=false){
+    print_r("<script>console.log('$v')</script>");
+    if($ex) exit();
+}
 
 function generateBankPDF(){
     $q = new Questions();
