@@ -1,0 +1,11 @@
+body{
+    background-color: #222;
+    color: #fff;
+    font-family: 'Ubuntu';
+}
+.jumbotron h2, .jumbotron h3, .jumbotron h4, .jumbotron h1, .jumbotron h6, .jumbotron p, .jumbotron label{
+    color: #222;
+}
+.container_login {
+    max-width: 48vw !important;
+}

@@ -78,9 +78,32 @@ create table if not exists user_questions(
     bank_name varchar(60) not null default 0    
 );
 
+create table admin(
+	id bigint auto_increment unique not null,
+    name varchar(60) not null,
+    mail varchar(60) not null,
+    pass varchar(255) not null,
+    
+    primary key(id),
+        
+    created_at datetime default now(),
+    updated_at datetime    
+);
+create table unacceptable_hosts(
+	id bigint auto_increment not null,
+    ip_addr varchar(255) not null,
+    user_agent varchar(255) not null,
+    created_at datetime default now(),
+    primary key(id)
+);
+
 -- https://avatars0.githubusercontent.com/u/56204477?s=400&u=c28c1517802d462612ae345b0c992cbf4f825637&v=4
 insert into user(id, name, email, school, senha, rm, answered_questions, link_photo)
-values(88,'admin', 'viniolimpio3@gmail.com', 'escola', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', '000000', true,  'https://avatars0.githubusercontent.com/u/56204477?s=400&u=c28c1517802d462612ae345b0c992cbf4f825637&v=4' );
+values(88,'VINI', 'viniolimpio3@gmail.com', 'escola', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', '000000', true,  'https://avatars0.githubusercontent.com/u/56204477?s=400&u=c28c1517802d462612ae345b0c992cbf4f825637&v=4' );
 
 INSERT INTO user_questions( user_id, rg, uf_rg, cpf, cep, qt_pc_desktop, qt_pc_notebook, qt_sm_phone, renda_per_capita, qtd_in_house, renda_ind, internet, reason, isp_configs, pc_desktop_configs, pc_notebook_configs, sm_phone_configs, city )
 values( 88,  '00.000.000-0',  'SP',  '000.111.222-31',  '09-340340',  '2',  '2',  '1',  'R$232',  '2',  'R$3232,22',  '1',  'MOTIVOS',  'fasdf',  'wesdfadf',  'adfasd dfa',  'fdadfadfa', 'Mauá');
+
+
+insert into admin(id, name, mail, pass)
+values(88, 'admin', 'viniolimpio3@gmail.com', '40bd001563085fc35165329ea1ff5c5ecbdbbeef' );
