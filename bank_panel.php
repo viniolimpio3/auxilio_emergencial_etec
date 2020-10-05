@@ -25,7 +25,7 @@
             justify-content: space-around;
         }
     </style>
-    <script src="assets/js/main.js?v=1"></script>
+    <script src="assets/js/main.js"></script>
 
 
     <body>
@@ -57,11 +57,19 @@
             $answered_bank_q = $user->answered_bank_q;
 
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === 'doesnt-have-bank'){//não possui conta bancária
-                $gerouPDF = generateBankPDF();
-                if(!$gerouPDF) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
-                dd($gerouPDF, true);
-                $u->update(['id' => $user->id],['answered_bank_q'=> true, 'has_bank_account' => false]);
-                setMessage('success', 'Agora baixe o arquivo em PDF, e leve-o até uma agência bancária, que autorize a criação de uma conta corrente!', 'bank_panel.php?');        
+                try{
+                    
+                    $u->update(['id' => $user->id],['answered_bank_q'=> true, 'has_bank_account' => false]);
+                    
+                    setMessage('success', 'Agora baixe o arquivo em PDF, e leve-o até uma agência bancária, que autorize a criação de uma conta corrente!', 'bank_panel.php');        
+
+                    // $gerouPDF = generateBankPDF();
+                    
+                    // if(!$gerouPDF) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+
+                }catch(Error $e){
+                    throw new Error($e->getMessage());
+                }
             }
             
             

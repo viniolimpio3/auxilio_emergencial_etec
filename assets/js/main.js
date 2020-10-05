@@ -119,19 +119,33 @@ function getCities(uf, selectHtmlRef){
 const urlToDataJSON = `http://localhost/etec/php_aulas/projeto_aux_em/assets/js/data/banks_in_brazil.json`;
 
 function getBankNames(selectHtmlRef){
-	axios.get(urlToDataJSON).then(({data:banks}) =>{
-		banks.forEach((bank, index) =>{
-			const op = document.createElement('option')
-			op.setAttribute('value', bank.label )
-			op.append(bank.label)
-			selectHtmlRef.append(op)
+	try{
+		axios.get(urlToDataJSON,{
+			crossDomain:true
+		}).then(({data:banks}) =>{
+			banks.forEach((bank, index) =>{
+				const op = document.createElement('option')
+				op.setAttribute('value', bank.label)
+				op.append(bank.label)
+				selectHtmlRef.append(op)
+			})
 		})
-	})
+
+	}catch(e){
+		console.log('log', e)
+	}
 }
 
 function getBankCode(bankName){
-	axios.get(urlToDataJSON).then( ({data:banks}) =>{
-		const b = banks.filter((bank, index) => bankName === bank.label)
-		return b[0].value
-	})
+	try{
+		axios.get(urlToDataJSON, {
+			crossDomain:true
+		}).then( ({data:banks}) =>{
+			const b = banks.filter((bank, index) => bankName === bank.label)
+			return b[0].value
+		})
+
+	}catch(e){
+		console.log('log2', e)
+	}
 }

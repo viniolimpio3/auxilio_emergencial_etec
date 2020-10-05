@@ -48,6 +48,8 @@
 
             use Model\Auxilio;
             $aux = new Auxilio();
+
+            $a = $aux->get(['user_id' => $user->id]);
             
             use Model\Questions;
             $q_model = new Questions();
@@ -129,8 +131,8 @@
                             err(10000);
                             success('painel.php');
                         ?>
-                        <?php if(!$aux->exists($user->id)): ?>
-                            <?php if(!$answered_questions):?>
+                        <?php if(!$a->status ): ?>
+                            <?php if(!$answered_questions): ?>
                                 <h2>Boa <?= $user->name?>! </h2>
                                 <p>Responda as questões abaixo para concluir sua inscrição</p>
                                 <form id="form" action="painel.php?cadastrar=s" method="POST" >
@@ -182,18 +184,25 @@
                                     
                                 </form>
                             <?php else: ?>
-                                <?php if ( $user-> answered_bank_q ):  ?>
+                                <?php if ( $user->answered_bank_q ):  ?>
                                     <h3><?=$user->name?> seus dados estão em análise...</h3>
                                     <?php if ( !$user->has_bank_account ):  ?>
                                         <a href="bank_panel.php?get_pdf=<?=$user->id?>">Baixar seus dados</a>
                                     <?php endif ?>
                                 <?php endif ?> 
                             <?php endif ?>
+
+                            <?php if ( $a->status and $a->comments ):  ?>
+                                <div class="alert alert-danger">
+                                    <h3> <?=$user->name?>, seu pedido foi rejeitado. </h3>
+                                    <p>Observações: <?=$a->comments?></p>
+                                </div>
+                            <?php endif ?>
                         <?php else: ?>
                             <div class="alert alert-success">
                                 <h3>Parabéns <?=$user->name?>, você está cadastrado no auxílio emergencial!!</h3>
+                                <a href="bank_panel.php?get_pdf=<?=$user->id?>">Baixar seus dados</a>
                             </div>
-
                         <?php endif ?>
                     </div>
                 </div>

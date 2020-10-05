@@ -8,12 +8,10 @@ create table user(
 	id bigint auto_increment unique not null,
     name varchar(60) not null,
     email varchar(60) not null,
-    -- city varchar(40) not null,
-    -- state varchar(20) not null,
     school varchar(60) not null,
     senha text not null,/*hash - sha1*/
     rm char(6) not null unique, 
-        
+            
     answered_questions boolean default false comment 'user_questions',
     
     link_photo text default 'https://www.computerhope.com/jargon/g/guest-user.jpg',
@@ -23,7 +21,6 @@ create table user(
     
     answered_bank_q boolean default false,
     has_bank_account boolean default false,
-    
     
     is_verified_email boolean not null default false,
     forgot_pass boolean not null default false,
@@ -37,6 +34,11 @@ create table user(
 create table if not exists aux_em(
 	id bigint auto_increment unique,
     user_id bigint unique not null,/*not null - indica relacionamento obrigatório!*/
+    
+    status boolean default false,
+    comments text not null default '', -- Parecer sobre os dados respondidos pelo user
+    
+    
     foreign key(user_id) references user ( id ),
     primary key(id)
 );
@@ -54,7 +56,6 @@ create table if not exists user_questions(
     cep varchar(12) not null,
     cpf varchar(20) not null unique,
     
-
     internet boolean not null,
     isp_name varchar(20) comment 'internet service provider name',
     isp_configs longtext comment 'internet config',
