@@ -100,6 +100,8 @@
                 $input_values['pc_notebook_configs'] = isset($_POST['pc_notebook_configs']) ? $_POST['pc_notebook_configs'] : '' ;
                 $input_values['sm_phone_configs'] = isset($_POST['sm_phone_configs']) ? $_POST['sm_phone_configs'] : '' ;
 
+                ableToAuxEm($input_values);
+
                 $inserted = $q_model->insert($input_values, $user->id);
 
                 if(isset($_POST['link_photo'])) $u->update(['id' => $user->id], ['link_photo' => $_POST['link_photo']]);

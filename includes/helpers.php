@@ -34,7 +34,6 @@ function base_url($path=false){
 }
 
 function verifyIPtoAdmin($con){
-
     $base = base_url();
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
     $ip = $_SERVER['REMOTE_ADDR'];
@@ -43,7 +42,7 @@ function verifyIPtoAdmin($con){
     $c = $con->prepare($q);
 
     if( $c->execute() and $c->rowCount() > 0 ) {
-        header("location: $base");
+        header("location: ../");
         exit();
     }
 
