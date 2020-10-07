@@ -192,14 +192,14 @@
     <div class="col">
         <label for="renda_per_capita">Qual a renda per capita de sua família?* <small>Soma das rendas individuas dividida pelo número de pessoas de sua casa</small></label>
         <div class="input-group">
-            <input class="form-control" onkeypress="return onlyNumber()" onkeyup="mask('R$####,##',this,event)" type="text" placeholder="Renda per capita*" name="renda_per_capita" id="renda_per_capita">
+            <input class="form-control" onkeypress="return onlyNumber()" onkeyup="mask('R$####,##',this,event)" type="number" placeholder="Renda per capita*" name="renda_per_capita" id="renda_per_capita">
         </div>
     </div>
 
     <div class="col">
         <label for="qtd_in_house">Quantas pessoas vivem atualmente em sua casa?*</label>
         <div class="input-group">
-            <input class="form-control" onkeypress="return onlyNumber()" type="text" placeholder="Nº Habitantes em sua casa*" name="qtd_in_house" id="qtd_in_house">
+            <input class="form-control" onkeypress="return onlyNumber()" type="number" placeholder="Nº Habitantes em sua casa*" name="qtd_in_house" id="qtd_in_house">
         </div>
     </div>
 
@@ -208,7 +208,7 @@
     <div class="col">
         <label for="renda_ind">Qual a sua renda individual?*</label>
         <div class="input-group">
-            <input class="form-control" onkeypress="return onlyNumber()" onkeyup="mask('R$####,##',this,event)" type="text" placeholder="Renda Individual*" name="renda_ind" id="renda_ind">
+            <input class="form-control" onkeypress="return onlyNumber()" onkeyup="mask('R$####,##',this,event)" type="number" placeholder="Renda Individual*" name="renda_ind" id="renda_ind">
         </div>
     </div>
 </div>

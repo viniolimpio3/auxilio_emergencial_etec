@@ -27,7 +27,7 @@ create table user(
     url_hash varchar(255), /*sha1*/
     
     created_at datetime default now(),
-    updated_at datetime,
+    updated_at datetime on update CURRENT_TIMESTAMP,
     primary key(id)
 );
 
@@ -88,7 +88,7 @@ create table admin(
     primary key(id),
         
     created_at datetime default now(),
-    updated_at datetime    
+    updated_at datetime on update CURRENT_TIMESTAMP
 );
 create table unacceptable_hosts(
 	id bigint auto_increment not null,

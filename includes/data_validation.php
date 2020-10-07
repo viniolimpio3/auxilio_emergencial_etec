@@ -23,6 +23,20 @@ function removeDollarSign($str){
 
     return str_replace('R$', '', $str);
 }
+
+function has_registerAux(){
+    try{
+        if(!$user = getUpdatedUser()) return false;
+        $a = new Model\Auxilio();
+        
+        $has_register = $a->exists($user->id);
+        if(!$has_register) $a->insert($user->id);
+
+    }catch(Exception $e){
+        throw new Exception($e->getMessage());
+        return false;
+    }
+}
        
 function ableToAuxEm( $data ){
     if(!$user = getUpdatedUser()) return false;
@@ -65,6 +79,8 @@ function ableToAuxEm( $data ){
         return;
     }
 
+    setStatusAuxEm(true, 'Seu perfil se enquadra no perfil para recebimento do Auxílio emergencial');
+
     return true;
 }
 
@@ -74,6 +90,8 @@ function setStatusAuxEm($status, $comments){
 
     if(!is_bool($status)) return false;
     try{
+        $status = $status == 0 ? false : true; 
+
         $a->update(['user_id' => $user->id],['status' => $status, 'comments' => $comments]);
     }catch(Exception $e){
         throw new Exception($e->getMessage());

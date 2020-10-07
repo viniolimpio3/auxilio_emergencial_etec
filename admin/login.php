@@ -32,6 +32,7 @@
                 exit();
             }
 
+
             $max_tentativas_login = 3;
             if(!isset($_SESSION['ad_tentativas_login'])) $_SESSION['ad_tentativas_login'] = 0;
 
@@ -66,16 +67,15 @@
                   
                 if($admin){
                     $_SESSION['ad_tentativas_login'] = 0;
-                    $successMessage = "Parabéns " . $u->name . ", você logou com sucesso.\nAguarde para ser redirecionado!";
+                    $successMessage = "Parabéns " . $admin->name . ", você logou com sucesso.\nAguarde para ser redirecionado!";
                     $_SESSION['auth'] = 'admin';
-                    $_SESSION['user'] = $u;
+                    $_SESSION['user'] = $admin;
                     setMessage('success', $successMessage, 'login.php');
 
                 }else {
                     $_SESSION['ad_tentativas_login'] += 1;
                     setMessage('err', 'Email ou Senha Incorreto(s)',"$page");
                 }
-                
             }else{
         ?>
             <div class="container mt-5 container_login">
@@ -85,8 +85,6 @@
                         <label for="mail">Email:</label>
                         <input required id="mail" name="mail" autocomplete="off" type="email" class="form-control">
                          
-                        
-
                         <label for="pass">Senha:</label>
                         <input required autocomplete="off" type="password" name="pass" id="pass" class="form-control">
                         <br>

@@ -110,10 +110,8 @@ class Questions{
                 }
             }
             $query .= "WHERE user_id = $userID ";
-
             
             $c = $connection->prepare($query);
-
 
             if($c->execute() and $c->rowCount() > 0)
                 return true;

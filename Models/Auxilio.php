@@ -70,15 +70,23 @@ class Auxilio{
     public function update($filterItems, $data){
         if(!require 'database/connection.php') require 'database/connection.php';
         try{    
-            $q = "UPDATE aux_em set ";
+            $q = "UPDATE aux_em set";
             foreach($data as $field => $value){
-                end($data);
-                if(key($data) === $field){
-                    $q .= "$field = '".$data[$field]."' ";
-                }else{
-                    $q .= "$field = '".$data[$field]."', ";
+                $type = gettype($value);
+                if(is_bool($value) and $value === false) $value = 0;
+
+                end($data); //ponteiroooo
+
+                if(key($data) === $field) {
+                    if($type != 'boolean') $q .= " $field = '".$value."' ";
+                    else $q .= "  $field = ".$value." ";
+                }
+                else {
+                    if($type != 'boolean') $q .= " $field = '".$value."', ";
+                    else $q .= "  $field = ".$value.", ";
                 }
             }
+            
             
             $q .= " WHERE 1 = 1 ";
             foreach($filterItems as $field => $value){

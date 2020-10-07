@@ -123,22 +123,21 @@ class User{
 
             foreach($data as $field => $value){
                 $type = gettype($value);
-                end($data);                
-                if(key($data) === $field){
-                    $query .= !$type == 'boolean' ? " $field = '".$value."' " : "  $field = ".$value." ";
-                }else{
-                    $query .= !$type == 'boolean' ? " $field = '".$value."', " : "  $field = ".$value.", ";
-                }
+                if(is_bool($value) and $value === false) $value = 0;
+                end($data); //ponteiroooo
+                if(key($data) === $field) $query .= !$type == 'boolean' ? " $field = '".$value."' " : "  $field = ".$value." ";
+                else $query .= !$type == 'boolean' ? " $field = '".$value."', " : "  $field = ".$value.", ";
             }
             
             $query .= " WHERE 1=1 ";
 
             foreach($filtros as $field => $value){                
-                if(isset($filtros[$field])) $query .= " AND $field='" . $filtros[$field] . "' ";
+                if($field === 'id'){
+                   $query .= " AND id=$value ";
+                }
+                else if(isset($filtros[$field])) $query .= " AND $field='" . $filtros[$field] . "' ";               
             }
-
             
-            dd($query, true);
             $c = $connection->prepare($query);
 
             return $c->execute() and $c->rowCount() > 0 ? true : false;

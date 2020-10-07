@@ -38,6 +38,9 @@
             
             use Model\Auxilio;
             $aux = new Auxilio();
+
+            $a = $aux->get(['user_id' => $user->id]);
+
             
             use Model\Questions;
             $q_model = new Questions();
@@ -71,6 +74,8 @@
                     throw new Error($e->getMessage());
                 }
             }
+            if(!$a->status and $a->comments !== '') logout();
+
             
             
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === '3fadfi2j3hra9sdufh2jhfk' ){//possui conta bancária
@@ -154,10 +159,12 @@
                                 <!-- mostrar se o usuário cadastrou no auxílio emergencial -->
                             <?php else: ?>
                                 <!-- user não possui conta bancária - mostrar pdf com seus dados para levar à um banco -->
+
                                 <div class="alert alert-success">
                                     Sua requisição já esta finalizada
                                 </div>
                                 <a href="bank_panel.php?get_pdf=<?=$user->id?>" class="btn btn-dark">Clique aqui para baixar seu PDF</a>
+                                <a href="painel.php" class="btn btn-primary">Voltar ao painel</a>
                             <?php endif ?>
                         <?php endif ?>
                     </div>
