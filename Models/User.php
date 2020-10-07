@@ -122,24 +122,22 @@ class User{
             
 
             foreach($data as $field => $value){
-                end($data);
-                if(key($data) === $field){
-                    $query .= "$field = '".$data[$field]."' ";
-                }else{
-                    $query .= "$field = '".$data[$field]."', ";
-                }
+                $type = gettype($value);
+                if(is_bool($value) and $value === false) $value = 0;
+                end($data); //ponteiroooo
+                if(key($data) === $field) $query .= !$type == 'boolean' ? " $field = '".$value."' " : "  $field = ".$value." ";
+                else $query .= !$type == 'boolean' ? " $field = '".$value."', " : "  $field = ".$value.", ";
             }
             
             $query .= " WHERE 1=1 ";
 
-            foreach($this->userDefaultInputs as $field){
-                if($field == 'id'){
-                    if(isset($filtros['id'])) $query .= " AND id = '".$filtros['id']."' ";
-                } else{
-                    if(isset($filtros[$field])) $query .= " AND $field='" . $filtros[$field] . "' ";
+            foreach($filtros as $field => $value){                
+                if($field === 'id'){
+                   $query .= " AND id=$value ";
                 }
+                else if(isset($filtros[$field])) $query .= " AND $field='" . $filtros[$field] . "' ";               
             }
-
+            
             $c = $connection->prepare($query);
 
             return $c->execute() and $c->rowCount() > 0 ? true : false;

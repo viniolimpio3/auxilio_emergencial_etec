@@ -53,9 +53,7 @@ class Questions{
             $c = $connection->prepare($query);
             if($c->execute() && $c->rowCount() > 0){
                 while($row = $c->fetch(PDO::FETCH_OBJ)) return $row;
-            
             }else{
-                throw new PDOException('Não foi possível inserir um usuário no banco de dados');
                 return false;
             }
 
@@ -112,10 +110,8 @@ class Questions{
                 }
             }
             $query .= "WHERE user_id = $userID ";
-
             
             $c = $connection->prepare($query);
-
 
             if($c->execute() and $c->rowCount() > 0)
                 return true;

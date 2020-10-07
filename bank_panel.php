@@ -10,7 +10,7 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-
+        <link rel="stylesheet" href="assets/css/main.css">
     </head>
     <script>    
         //RETIRAR QUERIES da url QUANDO DER UM REFRESH
@@ -25,7 +25,7 @@
             justify-content: space-around;
         }
     </style>
-    <script src="assets/js/main.js?v=1"></script>
+    <script src="assets/js/main.js"></script>
 
 
     <body>
@@ -38,6 +38,9 @@
             
             use Model\Auxilio;
             $aux = new Auxilio();
+
+            $a = $aux->get(['user_id' => $user->id]);
+
             
             use Model\Questions;
             $q_model = new Questions();
@@ -57,12 +60,22 @@
             $answered_bank_q = $user->answered_bank_q;
 
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === 'doesnt-have-bank'){//não possui conta bancária
-                $gerouPDF = generateBankPDF();
-                if(!$gerouPDF) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
-                dd($gerouPDF, true);
-                $u->update(['id' => $user->id],['answered_bank_q'=> true, 'has_bank_account' => false]);
-                setMessage('success', 'Agora baixe o arquivo em PDF, e leve-o até uma agência bancária, que autorize a criação de uma conta corrente!', 'bank_panel.php?');        
+                try{
+                    
+                    $u->update(['id' => $user->id],['answered_bank_q'=> true, 'has_bank_account' => false]);
+                    
+                    setMessage('success', 'Agora baixe o arquivo em PDF, e leve-o até uma agência bancária, que autorize a criação de uma conta corrente!', 'bank_panel.php');        
+
+                    // $gerouPDF = generateBankPDF();
+                    
+                    // if(!$gerouPDF) setMessage('err', "Poxa {$user->name}, ocorreu um erro:/<br>Tente novamente mais tarde", 'bank_panel.php');
+
+                }catch(Error $e){
+                    throw new Error($e->getMessage());
+                }
             }
+            if(!$a->status and $a->comments !== '') logout();
+
             
             
             if(isset($_REQUEST['h']) and $_REQUEST['h'] === '3fadfi2j3hra9sdufh2jhfk' ){//possui conta bancária
@@ -146,10 +159,12 @@
                                 <!-- mostrar se o usuário cadastrou no auxílio emergencial -->
                             <?php else: ?>
                                 <!-- user não possui conta bancária - mostrar pdf com seus dados para levar à um banco -->
+
                                 <div class="alert alert-success">
                                     Sua requisição já esta finalizada
                                 </div>
                                 <a href="bank_panel.php?get_pdf=<?=$user->id?>" class="btn btn-dark">Clique aqui para baixar seu PDF</a>
+                                <a href="painel.php" class="btn btn-primary">Voltar ao painel</a>
                             <?php endif ?>
                         <?php endif ?>
                     </div>

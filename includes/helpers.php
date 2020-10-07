@@ -23,9 +23,47 @@ function setMessage($messageType,$message, $location, $options=false){
     header("location:$location?$messageType=" .urlencode($message). "&$options"); 
 }
 
+function base_dir(){
+    return __DIR__ . '/../';
+}
+
+function base_url($path=false){
+    $dir = $_SERVER['DOCUMENT_ROOT'] . '/etec/php_aulas/projeto_aux_em/';
+    if($path) $dir .= $path;
+    return $dir;
+}
+
+function verifyIPtoAdmin($con){
+    $base = base_url();
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    $q = "SELECT * FROM unacceptable_hosts WHERE ip_addr='$ip' and user_agent='$user_agent' LIMIT 1";
+    $c = $con->prepare($q);
+
+    if( $c->execute() and $c->rowCount() > 0 ) {
+        header("location: ../");
+        exit();
+    }
+
+    return $c->execute() and $c->rowCount() > 0 ? true : false;
+}
+
+function invalidateClient($con){
+
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    if(verifyIPtoAdmin($con)) return true;
+
+    $q = "INSERT INTO unacceptable_hosts(ip_addr, user_agent) values('$ip', '$user_agent')";
+    $c = $con->prepare($q);
+    return $c->execute() and $c->rowCount() > 0 ? true : false;
+}
 
 function logout(){
     session_destroy();
+
     header('location: doLogout.php');
 }
 
