@@ -178,7 +178,6 @@
 
                                     <h6>Seus dados bancários:</h6>
 
-                                    
                                     <table class="table">
                                         <thead>
                                             <th scope="col">Nome do Banco</th>

@@ -1,17 +1,22 @@
 <?php namespace Model;
 
+if(!require dirname(__DIR__) . '/vendor/autoload.php' ) require dirname(__DIR__) . '/vendor/autoload.php';
 
+use Connection;
 use Exception;
 use PDO;
 use PDOException;
 
-class Questions{
+class Questions extends Connection{
     function __construct(){
-        
+        parent::__construct();
+        parent::connect();
+
+        $this->con = $this->connection;
     }
 
     function insert($data, $user_id){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             
             $query = "INSERT INTO user_questions
@@ -29,7 +34,7 @@ class Questions{
             $query .= " );";
 
             // dd($query, true);
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
 
             if($c->execute() && $c->rowCount() > 0){
                 return true;
@@ -45,12 +50,12 @@ class Questions{
     }
 
     function get($userID){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             
             $query = "SELECT * from user_questions where user_id=$userID";
 
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() && $c->rowCount() > 0){
                 while($row = $c->fetch(PDO::FETCH_OBJ)) return $row;
             }else{
@@ -63,10 +68,10 @@ class Questions{
         }
     }
     function delete($userID){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             $query = "DELETE from user_questions where user_id=$userID";
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() && $c->rowCount() > 0)
                 return true;
             else
@@ -80,11 +85,11 @@ class Questions{
     }
 
     function issetUserID($uID){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             $query = "SELECT user_id from user_questions where user_id=$uID";
             
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() && $c->rowCount() > 0)
                 while($row = $c->fetch(PDO::FETCH_OBJ)) $this->delete($uID);
             else
@@ -98,7 +103,7 @@ class Questions{
     }
 
     function update($userID, $data){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             $query = "UPDATE user_questions SET ";
             foreach($data as $field => $value){
@@ -111,7 +116,7 @@ class Questions{
             }
             $query .= "WHERE user_id = $userID ";
             
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
 
             if($c->execute() and $c->rowCount() > 0)
                 return true;

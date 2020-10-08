@@ -23,9 +23,11 @@
     <script src="../../assets/js/main.js?v=1"></script>
     <body>
         <?php
-            require_once __DIR__ . '../../../vendor/autoload.php';                        
-            require base_url('database/connection.php');
-            verifyIPtoAdmin($connection);
+            require_once dirname(__DIR__) . '/../vendor/autoload.php';      
+            verifyIPtoAdmin();
+
+            isAdmin();
+
 
             $max_tentativas_login = 3;
 
@@ -44,6 +46,16 @@
             $ad = new Admin();
     
             $input_values = array();
+
+            $usersList = $ad->listUsers();
+
+
+            dd($usersList, true);
+
+
+
+
+
 
             
             if(isset($_REQUEST['send']) and $_REQUEST['send'] === 'yes' ){
@@ -86,7 +98,10 @@
                     ?>
 
                     <br>
-                    <a href="../">Voltar para o site</a>
+
+                    <?php 
+                    ?>
+                    <a href="/">Voltar para o site</a>
                 </div>
             </div>
         <?php }//fim else!!

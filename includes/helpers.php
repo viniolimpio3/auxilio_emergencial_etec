@@ -1,9 +1,12 @@
 <?php 
-require_once __DIR__ ."../../vendor/autoload.php";
+// require_once __DIR__ ."../../vendor/autoload.php";
+if(!require dirname(__DIR__) . '/vendor/autoload.php' ) require dirname(__DIR__) . '/vendor/autoload.php';
+
 
 use Model\User;
 use Mpdf\Mpdf;
 use Model\Questions;
+
 function dd($v, $exit=false){
     echo '<pre>';
     print_r($v);
@@ -28,12 +31,16 @@ function base_dir(){
 }
 
 function base_url($path=false){
-    $dir = $_SERVER['DOCUMENT_ROOT'] . '/etec/php_aulas/projeto_aux_em/';
+    $dir = dirname(__DIR__) . '/';
     if($path) $dir .= $path;
     return $dir;
 }
 
-function verifyIPtoAdmin($con){
+function verifyIPtoAdmin(){
+    $connection = new Connection();
+
+    $con = $connection->connect();
+    
     $base = base_url();
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
     $ip = $_SERVER['REMOTE_ADDR'];
@@ -73,7 +80,9 @@ if(!function_exists('getUpdatedUser')){
     function getUpdatedUser(){
         $u = new User();
         
+
         if(!isset($_SESSION['user']) or !isset($_SESSION['user']->id)) logout();
+
 
         $user = $u->get(['id'=> $_SESSION['user']->id]);
 
@@ -202,3 +211,22 @@ function yes_no($v){
     return $v ? 'SIM' : 'NÃO';
 }
 
+function isAdmin(){
+    require_once dirname(__DIR__) . '/vendor/autoload.php';
+    $a = new Model\Admin();
+
+    if(!isset($_SESSION)){
+        session_start();
+        session_destroy();
+        $base = base_url();
+        logout();
+    }
+    
+    if(!$_SESSION['auth'] === 'admin' or !isset($_SESSION['user'])) logout();
+
+    $admin = $a->get(['id' => $_SESSION['user']->id]);
+    if(!$admin || !is_object($admin)) return logout();
+
+    return $admin;
+
+}

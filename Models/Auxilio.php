@@ -1,19 +1,27 @@
 <?php namespace Model;
 
+if(!require dirname(__DIR__) . '/vendor/autoload.php' ) require dirname(__DIR__) . '/vendor/autoload.php';
+
+use Connection;
 use Error;
 use Exception;
 use PDO;
 use PDOException;
 
 
-class Auxilio{
+class Auxilio extends Connection{
     function __construct($userId=''){
+        parent::__construct();
+
+        parent::connect();
+        $this->con = $this->connection;
+        $this->con;
         $this->userID = $userId;
         $this->auxID = '';
     }
 
     public function get($filterItems){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             $query = "SELECT * from aux_em where 1=1 ";
 
@@ -21,7 +29,7 @@ class Auxilio{
                 $query .= " AND $field=$value ";
             }
 
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() and $c->rowCount()>0){
                 while($r = $c->fetch(PDO::FETCH_OBJ)) return $r;
             }else{
@@ -33,13 +41,13 @@ class Auxilio{
     }
 
     public function insert($userID){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             $query = "insert into aux_em(user_id)values('$userID')";
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
 
             if($c->execute() and $c->rowCount() > 0){
-                $this->auxID = $connection->lastInsertId();
+                $this->auxID = $this->con->lastInsertId();
                 return $this->auxID;
             }else{
                 throw new Error('Erro ao cadastrar Auxílio Emergencial');
@@ -51,10 +59,10 @@ class Auxilio{
     }
 
     public function exists($userID){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{
             $query = "select id from aux_em where user_id = $userID LIMIT 1";
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() and $c->rowCount()>0){
                 while($r = $c->fetch(PDO::FETCH_OBJ)){
                     return $r->id;
@@ -68,7 +76,7 @@ class Auxilio{
     }
 
     public function update($filterItems, $data){
-        if(!require 'database/connection.php') require 'database/connection.php';
+        
         try{    
             $q = "UPDATE aux_em set";
             foreach($data as $field => $value){
@@ -93,7 +101,7 @@ class Auxilio{
                 $q .= " AND " . $field . " = '$value' ";
             }
 
-            if($c = $connection->prepare($q) and $c->execute() and $c->rowCount() > 0) return true;
+            if($c = $this->con->prepare($q) and $c->execute() and $c->rowCount() > 0) return true;
             return false;
 
         }catch(Exception $e){

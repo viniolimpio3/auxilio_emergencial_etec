@@ -1,21 +1,34 @@
 <?php namespace Model;
 
+if(!require dirname(__DIR__) . '/vendor/autoload.php' ) require dirname(__DIR__) . '/vendor/autoload.php';
+
 use Exception;
 use PDO;
 use PDOException;
 
-class Admin{
+use Connection;
 
+class Admin extends Connection{
+    protected $table;
+    
     function __construct(){
-        
+        parent::__construct();        
+        parent::connect();
+
+        $this->con = $this->connection;
+
+        $this->table = 'admin';
     }
 
     function listUsers(){
-        if(!require 'database/connection.php') require 'database/connection.php';
-        
         try{
-            $q = "SELECT * FROM users";
-            $c = $connection->prepare($q);
+            $q = "SELECT a.status, a.comments, u.name, u.rm, u.school, 
+            case 
+                WHEN u.link_photo != '' then u.link_photo
+            end as 'link_photo'
+            from `pwe3`.`user` as u INNER JOIN `pwe3`.`aux_em` as a on u.id = a.user_id";
+            
+            $c = $this->con->prepare($q);
             if($c->execute() and $c->rowCount() > 0){
                 $users = array();
                 while($r = $c->fetch(PDO::FETCH_OBJ)) array_push($users, (Object) $r);
@@ -30,12 +43,12 @@ class Admin{
     }
 
     function login($mail, $pass){
-        if(!require '../database/connection.php') require '../database/connection.php';
+        
         try{
             $q = "SELECT * FROM admin WHERE mail='$mail' and pass='$pass' LIMIT 1";
 
-            
-            $c = $connection->prepare($q);
+            $c = $this->con->prepare($q);
+
             if($c->execute() and $c->rowCount() > 0)
                 while($row = $c->fetch(PDO::FETCH_OBJ)) return (Object) $row;
             else
@@ -48,20 +61,17 @@ class Admin{
 
     function get($filtros){
         if(!is_array($filtros)) return false;
-
-        if(!require 'database/connection.php') require 'database/connection.php';
-
-
+       
         try{
             $query = "SELECT * from {$this->table} WHERE 1 = 1 ";
 
-            foreach($this->userDefaultInputs as $field){
+            foreach($filtros as $field){
                 if(isset($filtros[$field])) $query .= "AND $field = '$filtros[$field]' ";
             }
 
             $query .= "LIMIT 1";
 
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() && $c->rowCount() > 0)
                 while($row = $c->fetch(PDO::FETCH_OBJ)) return (Object) $row;
             else
@@ -78,7 +88,6 @@ class Admin{
         if(!is_array($filtros)) return false;
         if(!is_array($data)) return false;
 
-        if(!require 'database/connection.php') require 'database/connection.php';
         try{
             $query = "UPDATE {$this->table} SET ";
             
@@ -102,7 +111,7 @@ class Admin{
                 }
             }
 
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
 
             return $c->execute() and $c->rowCount() > 0 ? true : false;
 

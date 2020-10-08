@@ -1,17 +1,27 @@
 <?php namespace Model;
 
+if(!require dirname(__DIR__) . '/vendor/autoload.php' ) require dirname(__DIR__) . '/vendor/autoload.php';
 
 use Exception;
 use PDO;
 use PDOException;
+use Connection;
 
-class User{
+class User extends Connection{
 
+    protected $con;
     function __construct($name="", $mail="", $pass="" , $school="", $rm=""){
+        
+        parent::__construct();
+        parent::connect();
+
         $this->userName = $name;
         $this->userMail = $mail;
         $this->userPass = $pass;
         $this->school = $school;
+
+
+        $this->con = $this->connection;
 
         $this->rm = $rm;
         $this->id = 0;
@@ -36,7 +46,9 @@ class User{
     }
 
     function insert(){
-        if(!require 'database/connection.php') require 'database/connection.php';
+
+        
+
         try{
             $query = "INSERT INTO {$this->table} ( name, email, school, rm, senha)values(
                 '". $this->userName ."', 
@@ -46,10 +58,10 @@ class User{
                 '". $this->userPass ."'
             )";
             
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
 
             if($c->execute() && $c->rowCount() > 0){
-                $this->id = $connection->lastInsertId();
+                $this->id = $this->con->lastInsertId();
                 return $this->id;
             }else{
                 throw new PDOException('Não foi possível inserir um usuário no banco de dados');
@@ -65,9 +77,6 @@ class User{
     function get($filtros){
         if(!is_array($filtros)) return false;
 
-        if(!require 'database/connection.php') require 'database/connection.php';
-
-
         try{
             $query = "SELECT * from {$this->table} WHERE 1 = 1 ";
 
@@ -77,7 +86,7 @@ class User{
 
             $query .= "LIMIT 1";
 
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() && $c->rowCount() > 0)
                 while($row = $c->fetch(PDO::FETCH_OBJ)) return (Object) $row;
             else
@@ -91,13 +100,13 @@ class User{
     }
 
     public function login($user_login, $pass, $loginType){
-        if(!require 'database/connection.php') require 'database/connection.php';
+
 
         if(!isset($user_login) || !isset($pass)) return false;
         try{
 
             $query = "SELECT * from {$this->table} WHERE $loginType = '$user_login' AND senha = '$pass' LIMIT 1";
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
             if($c->execute() && $c->rowCount() > 0){
 
                 while($row = $c->fetch(PDO::FETCH_OBJ)) return (Object) $row;
@@ -116,7 +125,6 @@ class User{
         if(!is_array($filtros)) return false;
         if(!is_array($data)) return false;
 
-        if(!require 'database/connection.php') require 'database/connection.php';
         try{
             $query = "UPDATE {$this->table} SET ";
             
@@ -138,7 +146,7 @@ class User{
                 else if(isset($filtros[$field])) $query .= " AND $field='" . $filtros[$field] . "' ";               
             }
             
-            $c = $connection->prepare($query);
+            $c = $this->con->prepare($query);
 
             return $c->execute() and $c->rowCount() > 0 ? true : false;
 
@@ -151,11 +159,9 @@ class User{
     }
 
     public function getTimestampDiff($timeToCompare){
-        if(!require 'database/connection.php') require 'database/connection.php';
-
         $now = nowMysqlFormat();
         $q = "SELECT timestampdiff(SECOND, '$timeToCompare', '$now') as timediff";
-        $c = $connection->prepare($q);
+        $c = $this->con->prepare($q);
         if($c->execute() and $c->rowCount() > 0){
             while($row = $c->fetch(PDO::FETCH_OBJ)) return $row->timediff;
         }else{

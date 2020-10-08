@@ -5,7 +5,7 @@
         "mpdf/mpdf": "^8.0"
     },
     "autoload": {
-        "classmap": ["Models/"],
+        "classmap": ["Models/", "database/"],
         "files": [
             "./includes/data_validation.php",
             "./includes/handler.php",
