@@ -25,7 +25,8 @@ class Admin extends Connection{
             $q = "SELECT a.status, a.comments, u.name, u.rm, u.school, 
             case 
                 WHEN u.link_photo != '' then u.link_photo
-            end as 'link_photo'
+            end as 'link_photo',
+            u.email
             from `pwe3`.`user` as u INNER JOIN `pwe3`.`aux_em` as a on u.id = a.user_id";
             
             $c = $this->con->prepare($q);

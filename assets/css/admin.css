@@ -9,3 +9,21 @@ body{
 .container_login {
     max-width: 48vw !important;
 }
+
+.img_user_table{
+    max-width: 50px;
+}
+
+.green {
+    color: #1e8261;
+    font-size: 27px;
+    display: flex;
+    place-content: center;
+}
+
+.red {
+    color: #ce0a0a;
+    font-size: 27px;
+    display: flex;
+    place-content: center;
+}

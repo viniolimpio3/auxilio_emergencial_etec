@@ -6,10 +6,14 @@
         <title>ADMIN - Cadastro Auxílio Emergencial Estudantil</title>
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-        <link rel="stylesheet" href="../../assets/css/admin.css">
+        <link rel="stylesheet" href="../../assets/css/admin.css?v=1">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+        <!-- Font-Aweasome -->
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
 
     </head>
     <script>    
@@ -48,13 +52,6 @@
             $input_values = array();
 
             $usersList = $ad->listUsers();
-
-
-            dd($usersList, true);
-
-
-
-
 
 
             
@@ -99,9 +96,50 @@
 
                     <br>
 
-                    <?php 
-                    ?>
-                    <a href="/">Voltar para o site</a>
+                    <table class="table">
+                        <thead>
+                            <th scope="col">Foto</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">RM</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Escola</th>
+                            <th scope="col">Situação</th>
+                            <th scope="col">Observações</th>                                
+                        </thead>
+                        <tbody>
+                            <?php foreach ($usersList as $k => $v) :  ?>
+                                <tr>
+                                    <td> 
+                                        <img src="<?=$v->link_photo?> " alt="foto_<?=$v->name?>" class="img_user_table"> 
+                                    </td>
+                                    <td> 
+                                        <?=$v->name?> 
+                                    </td>
+                                    <td> <?=$v->rm?> </td>
+                                    <td> <?=$v->email?> </td>
+                                    <td> <?=$v->school?> </td>
+                                    <td>
+                                        <?php if ($v->status):  ?>
+                                            <div class="green">
+                                                <span class="fa fa-check-circle"></span>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="red">
+                                                <span class="fa fa-exclamation-triangle"></span> 
+                                            </div>
+                                        <?php endif ?>
+                                    </td>
+                                    <td> <?=$v->comments?> </td>
+
+                                </tr>
+                            <?php endforeach ?>
+                                                        
+                        </tbody>
+
+                    
+                    </table>
+
+                    <a href="../../">Voltar para o site</a>
                 </div>
             </div>
         <?php }//fim else!!
